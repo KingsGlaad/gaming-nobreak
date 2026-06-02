@@ -31,7 +31,7 @@ const formSchema = z.object({
   description: z.string().optional(),
   start_date: z.string().min(1, "Data de início é obrigatória"),
   end_date: z.string().min(1, "Data de término é obrigatória"),
-  is_active: z.boolean().default(false),
+  is_active: z.boolean(),
 });
 
 interface EditTemporadaDialogProps {

@@ -39,7 +39,7 @@ const formSchema = z.object({
   description: z.string().optional(),
   points: z.number().int().refine((val) => val !== 0, "A pontuação não pode ser 0"),
   category: z.string().optional(),
-  is_active: z.boolean().default(true),
+  is_active: z.boolean(),
 });
 
 interface EditRegraDialogProps {

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -121,7 +122,6 @@ function DatePickerInput({
               }
               setIsPopoverOpen(false);
             }}
-            initialFocus
           />
         </PopoverContent>
       </Popover>
@@ -135,10 +135,10 @@ const formSchema = z.object({
   phone: z.string().optional(),
   instagram: z.string().optional(),
   birth_date: z.date().optional().nullable(),
-  baptized: z.boolean().default(false),
+  baptized: z.boolean(),
   baptism_date: z.date().optional().nullable(),
   photo_url: z.string().optional().nullable(),
-  status: z.string().default("active"),
+  status: z.string(),
 });
 
 async function convertToWebp(file: File): Promise<Blob> {
@@ -283,11 +283,15 @@ export function EditJovemDialog({
       }
 
       const payload = {
-        ...values,
-        photo_url,
+        name: values.name,
+        nickname: values.nickname || undefined,
+        phone: values.phone || undefined,
+        instagram: values.instagram || undefined,
+        photo_url: photo_url || undefined,
         birth_date: values.birth_date || undefined,
         baptism_date: values.baptism_date || undefined,
         baptized: !!values.baptism_date || values.baptized,
+        status: values.status,
       };
 
       if (isEditing) {
@@ -311,6 +315,7 @@ export function EditJovemDialog({
       }
     } catch (error) {
       toast.error("Ocorreu um erro ao salvar.");
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }

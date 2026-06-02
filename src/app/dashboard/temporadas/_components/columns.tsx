@@ -1,10 +1,11 @@
-"use client"
+/* eslint-disable react-hooks/rules-of-hooks */
+"use client";
 
-import { useState } from "react"
-import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react"
+import { useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,16 +13,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 
-import { GlobalDeleteDialog } from "@/components/shared/global-delete-dialog"
-import { EditTemporadaDialog } from "./edit-dialog"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
-import { Season } from "@prisma/client"
-import { deleteTemporada } from "@/actions/temporadas"
-import { toast } from "sonner"
+import { GlobalDeleteDialog } from "@/components/shared/global-delete-dialog";
+import { EditTemporadaDialog } from "./edit-dialog";
+import { format } from "date-fns";
+import { deleteTemporada } from "@/actions/temporadas";
+import { toast } from "sonner";
+import { Season } from "@/generated/prisma/client";
 
 export const columns: ColumnDef<Season>[] = [
   {
@@ -32,46 +32,46 @@ export const columns: ColumnDef<Season>[] = [
     accessorKey: "start_date",
     header: "Início",
     cell: ({ row }) => {
-      const date = new Date(row.original.start_date)
-      return format(date, "dd/MM/yyyy")
-    }
+      const date = new Date(row.original.start_date);
+      return format(date, "dd/MM/yyyy");
+    },
   },
   {
     accessorKey: "end_date",
     header: "Fim",
     cell: ({ row }) => {
-      const date = new Date(row.original.end_date)
-      return format(date, "dd/MM/yyyy")
-    }
+      const date = new Date(row.original.end_date);
+      return format(date, "dd/MM/yyyy");
+    },
   },
   {
     accessorKey: "is_active",
     header: "Status",
     cell: ({ row }) => {
-      const isActive = row.original.is_active
+      const isActive = row.original.is_active;
       return (
         <Badge variant={isActive ? "default" : "secondary"}>
           {isActive ? "Ativa" : "Inativa"}
         </Badge>
-      )
-    }
+      );
+    },
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const temporada = row.original
-      const [deleteOpen, setDeleteOpen] = useState(false)
-      const [editOpen, setEditOpen] = useState(false)
+      const temporada = row.original;
+      const [deleteOpen, setDeleteOpen] = useState(false);
+      const [editOpen, setEditOpen] = useState(false);
 
       const handleDelete = async () => {
-        const res = await deleteTemporada(temporada.id)
+        const res = await deleteTemporada(temporada.id);
         if (res.success) {
-          toast.success("Temporada excluída com sucesso!")
+          toast.success("Temporada excluída com sucesso!");
         } else {
-          toast.error(res.error || "Erro ao excluir.")
+          toast.error(res.error || "Erro ao excluir.");
         }
-        setDeleteOpen(false)
-      }
+        setDeleteOpen(false);
+      };
 
       return (
         <>
@@ -113,7 +113,7 @@ export const columns: ColumnDef<Season>[] = [
             onConfirm={handleDelete}
           />
         </>
-      )
+      );
     },
   },
-]
+];

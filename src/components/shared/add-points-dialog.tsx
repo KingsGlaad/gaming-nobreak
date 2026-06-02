@@ -36,7 +36,7 @@ import { addPoints } from "@/actions/pontos";
 
 const formSchema = z.object({
   rule_id: z.string().min(1, "Selecione uma regra"),
-  points: z.coerce.number().int().min(1, "A pontuação deve ser maior que 0"),
+  points: z.number().int().min(1, "A pontuação deve ser maior que 0"),
   description: z.string().optional(),
 });
 
