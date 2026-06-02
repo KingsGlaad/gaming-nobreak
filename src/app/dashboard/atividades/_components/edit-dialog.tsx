@@ -22,8 +22,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
-import { createAtividade, updateAtividade, getTiposAtividade } from "@/actions/atividades";
-import { getTemporadas } from "@/actions/temporadas";
+import { getTiposAtividade } from "@/lib/services/atividades";
+import { useRouter } from "next/navigation";
+import { getTemporadas } from "@/lib/services/temporadas";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -58,6 +59,7 @@ export function EditAtividadeDialog({
   const [temporadas, setTemporadas] = useState<any[]>([]);
   const [tiposAtividade, setTiposAtividade] = useState<any[]>([]);
   const isEditing = !!data;
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -117,22 +119,34 @@ export function EditAtividadeDialog({
     setIsSubmitting(true);
     try {
       if (isEditing) {
-        const res = await updateAtividade(data.id, values);
-        if (res.success) {
+        const res = await fetch(`/api/atividades/${data.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        });
+        if (res.ok) {
           toast.success("Atividade atualizada!");
           onOpenChange(false);
+          router.refresh();
           onSuccess?.();
         } else {
-          toast.error(res.error || "Ocorreu um erro.");
+          const errorData = await res.json();
+          toast.error(errorData.error || "Ocorreu um erro.");
         }
       } else {
-        const res = await createAtividade(values);
-        if (res.success) {
+        const res = await fetch("/api/atividades", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        });
+        if (res.ok) {
           toast.success("Atividade criada!");
           onOpenChange(false);
+          router.refresh();
           onSuccess?.();
         } else {
-          toast.error(res.error || "Ocorreu um erro.");
+          const errorData = await res.json();
+          toast.error(errorData.error || "Ocorreu um erro.");
         }
       }
     } catch (error) {

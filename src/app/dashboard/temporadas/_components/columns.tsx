@@ -19,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { GlobalDeleteDialog } from "@/components/shared/global-delete-dialog";
 import { EditTemporadaDialog } from "./edit-dialog";
 import { format } from "date-fns";
-import { deleteTemporada } from "@/actions/temporadas";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Season } from "@/generated/prisma/client";
 
@@ -63,12 +63,20 @@ export const columns: ColumnDef<Season>[] = [
       const [deleteOpen, setDeleteOpen] = useState(false);
       const [editOpen, setEditOpen] = useState(false);
 
+      const router = useRouter();
+
       const handleDelete = async () => {
-        const res = await deleteTemporada(temporada.id);
-        if (res.success) {
-          toast.success("Temporada excluída com sucesso!");
-        } else {
-          toast.error(res.error || "Erro ao excluir.");
+        try {
+          const res = await fetch(`/api/temporadas/${temporada.id}`, { method: "DELETE" });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            toast.success("Temporada excluída com sucesso!");
+            router.refresh();
+          } else {
+            toast.error(data.error || "Erro ao excluir.");
+          }
+        } catch {
+          toast.error("Erro interno.");
         }
         setDeleteOpen(false);
       };

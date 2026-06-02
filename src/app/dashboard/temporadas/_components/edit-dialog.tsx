@@ -24,7 +24,7 @@ import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { createTemporada, updateTemporada } from "@/actions/temporadas";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(3, "Nome é obrigatório"),
@@ -49,6 +49,7 @@ export function EditTemporadaDialog({
 }: EditTemporadaDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isEditing = !!data;
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -89,22 +90,34 @@ export function EditTemporadaDialog({
     setIsSubmitting(true);
     try {
       if (isEditing) {
-        const res = await updateTemporada(data.id, values);
-        if (res.success) {
+        const res = await fetch(`/api/temporadas/${data.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        });
+        if (res.ok) {
           toast.success("Temporada atualizada!");
           onOpenChange(false);
+          router.refresh();
           onSuccess?.();
         } else {
-          toast.error(res.error || "Ocorreu um erro.");
+          const errorData = await res.json();
+          toast.error(errorData.error || "Ocorreu um erro.");
         }
       } else {
-        const res = await createTemporada(values);
-        if (res.success) {
+        const res = await fetch("/api/temporadas", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        });
+        if (res.ok) {
           toast.success("Temporada criada!");
           onOpenChange(false);
+          router.refresh();
           onSuccess?.();
         } else {
-          toast.error(res.error || "Ocorreu um erro.");
+          const errorData = await res.json();
+          toast.error(errorData.error || "Ocorreu um erro.");
         }
       }
     } catch (error) {

@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { getJovens } from "@/actions/jovens"
+import { getJovens } from "@/lib/services/jovens"
 import { JovensClient } from "./jovens-client"
 
 export const metadata: Metadata = {

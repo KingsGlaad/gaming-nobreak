@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 
-import { createJovem, updateJovem } from "@/actions/jovens";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase/client";
 
@@ -192,6 +192,7 @@ export function EditJovemDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const isEditing = !!data;
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -295,22 +296,36 @@ export function EditJovemDialog({
       };
 
       if (isEditing) {
-        const res = await updateJovem(data.id, payload);
-        if (res.success) {
+        const res = await fetch(`/api/jovens/${data.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        
+        if (res.ok) {
           toast.success("Jovem atualizado!");
           onOpenChange(false);
+          router.refresh();
           onSuccess?.();
         } else {
-          toast.error(res.error || "Ocorreu um erro ao atualizar.");
+          const errorData = await res.json();
+          toast.error(errorData.error || "Ocorreu um erro ao atualizar.");
         }
       } else {
-        const res = await createJovem(payload);
-        if (res.success) {
+        const res = await fetch("/api/jovens", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        
+        if (res.ok) {
           toast.success("Jovem criado!");
           onOpenChange(false);
+          router.refresh();
           onSuccess?.();
         } else {
-          toast.error(res.error || "Ocorreu um erro ao criar.");
+          const errorData = await res.json();
+          toast.error(errorData.error || "Ocorreu um erro ao criar.");
         }
       }
     } catch (error) {

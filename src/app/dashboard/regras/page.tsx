@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { getRegras } from "@/actions/regras"
+import { getRegras } from "@/lib/services/regras"
 import { RegrasClient } from "./regras-client"
 
 export const metadata: Metadata = {

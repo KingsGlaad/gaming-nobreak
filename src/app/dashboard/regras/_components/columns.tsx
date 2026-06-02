@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
 import { useState } from "react";
@@ -17,7 +18,7 @@ import { Badge } from "@/components/ui/badge";
 
 import { GlobalDeleteDialog } from "@/components/shared/global-delete-dialog";
 import { EditRegraDialog } from "./edit-dialog";
-import { deleteRegra } from "@/actions/regras";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { PointRule } from "@/generated/prisma/client";
 
@@ -66,12 +67,22 @@ export const columns: ColumnDef<PointRule>[] = [
       const [deleteOpen, setDeleteOpen] = useState(false);
       const [editOpen, setEditOpen] = useState(false);
 
+      const router = useRouter();
+
       const handleDelete = async () => {
-        const res = await deleteRegra(regra.id);
-        if (res.success) {
-          toast.success("Regra excluída com sucesso!");
-        } else {
-          toast.error(res.error || "Erro ao excluir.");
+        try {
+          const res = await fetch(`/api/regras/${regra.id}`, {
+            method: "DELETE",
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            toast.success("Regra excluída com sucesso!");
+            router.refresh();
+          } else {
+            toast.error(data.error || "Erro ao excluir.");
+          }
+        } catch {
+          toast.error("Erro interno.");
         }
         setDeleteOpen(false);
       };

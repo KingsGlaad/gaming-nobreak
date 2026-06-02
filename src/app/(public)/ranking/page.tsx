@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getRanking } from "@/actions/public";
+import { getRanking } from "@/lib/services/public";
 import { RankingList } from "./_components/ranking-list";
 
 export const metadata: Metadata = {

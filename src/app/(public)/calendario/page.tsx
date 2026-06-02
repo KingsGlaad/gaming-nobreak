@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getUpcomingEvents } from "@/actions/public";
+import { getUpcomingEvents } from "@/lib/services/public";
 import { CalendarioClient } from "./calendario-client";
 
 export const metadata: Metadata = {

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
 import { useState } from "react";
@@ -16,7 +17,7 @@ import {
 
 import { GlobalDeleteDialog } from "@/components/shared/global-delete-dialog";
 import { EditLiderDialog } from "./edit-dialog";
-import { deleteLider } from "@/actions/lideres";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Leader, User } from "@/generated/prisma/client";
 
@@ -52,12 +53,22 @@ export const columns: ColumnDef<LiderWithUser>[] = [
       const [deleteOpen, setDeleteOpen] = useState(false);
       const [editOpen, setEditOpen] = useState(false);
 
+      const router = useRouter();
+
       const handleDelete = async () => {
-        const res = await deleteLider(lider.id);
-        if (res.success) {
-          toast.success("Líder excluído com sucesso!");
-        } else {
-          toast.error(res.error || "Erro ao excluir.");
+        try {
+          const res = await fetch(`/api/lideres/${lider.id}`, {
+            method: "DELETE",
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            toast.success("Líder excluído com sucesso!");
+            router.refresh();
+          } else {
+            toast.error(data.error || "Erro ao excluir.");
+          }
+        } catch {
+          toast.error("Erro interno.");
         }
         setDeleteOpen(false);
       };

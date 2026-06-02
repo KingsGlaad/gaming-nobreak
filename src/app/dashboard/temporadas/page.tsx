@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { getTemporadas } from "@/actions/temporadas"
+import { getTemporadas } from "@/lib/services/temporadas"
 import { TemporadasClient } from "./temporadas-client"
 
 export const metadata: Metadata = {

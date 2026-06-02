@@ -31,8 +31,8 @@ import {
 } from "@/components/ui/select";
 
 import { useSession } from "next-auth/react";
-import { getRegras } from "@/actions/regras";
-import { addPoints } from "@/actions/pontos";
+import { getRegras } from "@/lib/services/regras";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   rule_id: z.string().min(1, "Selecione uma regra"),
@@ -58,6 +58,7 @@ export function AddPointsDialog({
   const { data: session } = useSession();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [regras, setRegras] = useState<any[]>([]);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -87,23 +88,29 @@ export function AddPointsDialog({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const res = await addPoints({
-        youth_id: jovemId,
-        rule_id: values.rule_id,
-        points: values.points,
-        description: values.description,
-        leader_email: session?.user?.email,
+      const res = await fetch("/api/pontos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          youth_id: jovemId,
+          rule_id: values.rule_id,
+          points: Number(values.points),
+          description: values.description,
+          leader_email: session?.user?.email,
+        }),
       });
 
-      if (res.success) {
+      if (res.ok) {
         toast.success(
           `+${values.points} pontos adicionados para ${jovemName}!`,
         );
         form.reset();
         onOpenChange(false);
+        router.refresh();
         onSuccess?.();
       } else {
-        toast.error(res.error || "Ocorreu um erro ao adicionar os pontos.");
+        const errorData = await res.json();
+        toast.error(errorData.error || "Ocorreu um erro ao adicionar os pontos.");
       }
     } catch (error) {
       toast.error("Ocorreu um erro ao adicionar os pontos.");

@@ -19,7 +19,7 @@ import { GlobalDeleteDialog } from "@/components/shared/global-delete-dialog";
 import { EditAtividadeDialog } from "./edit-dialog";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { deleteAtividade } from "@/actions/atividades";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Activity } from "@/generated/prisma/client";
 
@@ -54,12 +54,20 @@ export const columns: ColumnDef<Activity>[] = [
       const [deleteOpen, setDeleteOpen] = useState(false);
       const [editOpen, setEditOpen] = useState(false);
 
+      const router = useRouter();
+
       const handleDelete = async () => {
-        const res = await deleteAtividade(atividade.id);
-        if (res.success) {
-          toast.success("Atividade excluída com sucesso!");
-        } else {
-          toast.error(res.error || "Erro ao excluir.");
+        try {
+          const res = await fetch(`/api/atividades/${atividade.id}`, { method: "DELETE" });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            toast.success("Atividade excluída com sucesso!");
+            router.refresh();
+          } else {
+            toast.error(data.error || "Erro ao excluir.");
+          }
+        } catch {
+          toast.error("Erro interno.");
         }
         setDeleteOpen(false);
       };

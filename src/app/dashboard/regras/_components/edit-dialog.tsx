@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { createRegra, updateRegra } from "@/actions/regras";
+import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 
 import {
@@ -57,6 +57,7 @@ export function EditRegraDialog({
 }: EditRegraDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isEditing = !!data;
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -93,22 +94,34 @@ export function EditRegraDialog({
     setIsSubmitting(true);
     try {
       if (isEditing) {
-        const res = await updateRegra(data.id, values);
-        if (res.success) {
+        const res = await fetch(`/api/regras/${data.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        });
+        if (res.ok) {
           toast.success("Regra atualizada!");
           onOpenChange(false);
+          router.refresh();
           onSuccess?.();
         } else {
-          toast.error(res.error || "Ocorreu um erro.");
+          const errorData = await res.json();
+          toast.error(errorData.error || "Ocorreu um erro.");
         }
       } else {
-        const res = await createRegra(values);
-        if (res.success) {
+        const res = await fetch("/api/regras", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        });
+        if (res.ok) {
           toast.success("Regra criada!");
           onOpenChange(false);
+          router.refresh();
           onSuccess?.();
         } else {
-          toast.error(res.error || "Ocorreu um erro.");
+          const errorData = await res.json();
+          toast.error(errorData.error || "Ocorreu um erro.");
         }
       }
     } catch (error) {

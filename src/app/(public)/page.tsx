@@ -6,7 +6,7 @@ import {
   getTopRanking,
   getUpcomingEvents,
   getAchivements,
-} from "@/actions/public";
+} from "@/lib/services/public";
 import { Ranking } from "@/types/ranking";
 import { Activity, Season, Achievement } from "@/generated/prisma/client";
 

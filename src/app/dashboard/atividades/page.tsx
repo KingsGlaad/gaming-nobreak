@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { getAtividades } from "@/actions/atividades"
+import { getAtividades } from "@/lib/services/atividades"
 import { AtividadesClient } from "./atividades-client"
 
 export const metadata: Metadata = {

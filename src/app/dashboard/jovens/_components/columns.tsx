@@ -20,7 +20,7 @@ import { GlobalDeleteDialog } from "@/components/shared/global-delete-dialog";
 import { AddPointsDialog } from "@/components/shared/add-points-dialog";
 import { EditJovemDialog } from "./edit-dialog";
 
-import { deleteJovem } from "@/actions/jovens";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Youth } from "@/generated/prisma/client";
 import { format } from "date-fns";
@@ -90,12 +90,20 @@ export const columns: ColumnDef<Youth>[] = [
       const [editOpen, setEditOpen] = useState(false);
       const [addPointsOpen, setAddPointsOpen] = useState(false);
 
+      const router = useRouter();
+
       const handleDelete = async () => {
-        const res = await deleteJovem(jovem.id);
-        if (res.success) {
-          toast.success("Jovem inativado com sucesso!");
-        } else {
-          toast.error(res.error || "Erro ao excluir.");
+        try {
+          const res = await fetch(`/api/jovens/${jovem.id}`, { method: "DELETE" });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            toast.success("Jovem inativado com sucesso!");
+            router.refresh();
+          } else {
+            toast.error(data.error || "Erro ao excluir.");
+          }
+        } catch {
+          toast.error("Erro interno.");
         }
         setDeleteOpen(false);
       };

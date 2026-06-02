@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { createLider, updateLider } from "@/actions/lideres";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(3, "Nome é obrigatório"),
@@ -53,6 +53,7 @@ export function EditLiderDialog({
 }: EditLiderDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isEditing = !!data;
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -86,22 +87,34 @@ export function EditLiderDialog({
     setIsSubmitting(true);
     try {
       if (isEditing) {
-        const res = await updateLider(data.id, values);
-        if (res.success) {
+        const res = await fetch(`/api/lideres/${data.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        });
+        if (res.ok) {
           toast.success("Líder atualizado!");
           onOpenChange(false);
+          router.refresh();
           onSuccess?.();
         } else {
-          toast.error(res.error || "Ocorreu um erro.");
+          const errorData = await res.json();
+          toast.error(errorData.error || "Ocorreu um erro.");
         }
       } else {
-        const res = await createLider(values);
-        if (res.success) {
+        const res = await fetch("/api/lideres", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        });
+        if (res.ok) {
           toast.success("Líder criado!");
           onOpenChange(false);
+          router.refresh();
           onSuccess?.();
         } else {
-          toast.error(res.error || "Ocorreu um erro.");
+          const errorData = await res.json();
+          toast.error(errorData.error || "Ocorreu um erro.");
         }
       }
     } catch (error) {
