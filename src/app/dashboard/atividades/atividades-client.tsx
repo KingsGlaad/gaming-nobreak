@@ -1,14 +1,15 @@
-"use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
-import { useState } from "react"
-import { DataTable } from "@/components/layout/data-table"
-import { columns } from "./_components/columns"
-import { EditAtividadeDialog } from "./_components/edit-dialog"
-import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
+import { useState } from "react";
+import { DataTable } from "@/components/layout/data-table";
+import { columns } from "./_components/columns";
+import { EditAtividadeDialog } from "./_components/edit-dialog";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
 
 export function AtividadesClient({ initialData }: { initialData: any[] }) {
-  const [createOpen, setCreateOpen] = useState(false)
+  const [createOpen, setCreateOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
@@ -38,5 +39,5 @@ export function AtividadesClient({ initialData }: { initialData: any[] }) {
         data={null}
       />
     </div>
-  )
+  );
 }

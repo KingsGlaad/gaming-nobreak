@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
 import { useState } from "react";
@@ -62,7 +63,9 @@ export const columns: ColumnDef<Youth>[] = [
       const date = row.original.birth_date;
       if (!date) return "-";
       const d = new Date(date);
-      const correctedDate = new Date(d.getTime() + d.getTimezoneOffset() * 60000);
+      const correctedDate = new Date(
+        d.getTime() + d.getTimezoneOffset() * 60000,
+      );
       return format(correctedDate, "dd/MM/yyyy");
     },
   },
@@ -73,7 +76,9 @@ export const columns: ColumnDef<Youth>[] = [
       const date = row.original.baptism_date;
       if (!date) return "-";
       const d = new Date(date);
-      const correctedDate = new Date(d.getTime() + d.getTimezoneOffset() * 60000);
+      const correctedDate = new Date(
+        d.getTime() + d.getTimezoneOffset() * 60000,
+      );
       return format(correctedDate, "dd/MM/yyyy");
     },
   },

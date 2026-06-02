@@ -1,6 +1,5 @@
 import { Metadata } from "next"
-import { getAtividades, getTiposAtividade } from "@/actions/atividades"
-import { getTemporadas } from "@/actions/temporadas"
+import { getAtividades } from "@/actions/atividades"
 import { AtividadesClient } from "./atividades-client"
 
 export const metadata: Metadata = {
@@ -10,14 +9,10 @@ export const metadata: Metadata = {
 
 export default async function AtividadesPage() {
   const atividades = await getAtividades()
-  const temporadas = await getTemporadas()
-  const tiposAtividade = await getTiposAtividade()
   
   return (
     <AtividadesClient 
       initialData={atividades} 
-      temporadas={temporadas}
-      tiposAtividade={tiposAtividade}
     />
   )
 }

@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { ArrowLeft, Trophy, Medal, Target } from "lucide-react";
+import { ArrowLeft, Medal, Target } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,7 +27,9 @@ export async function generateMetadata({
     };
   }
 
-  const displayName = youth.nickname ? `${youth.name} (@${youth.nickname})` : youth.name;
+  const displayName = youth.nickname
+    ? `${youth.name} (@${youth.nickname})`
+    : youth.name;
   return {
     title: `Perfil de ${displayName} | Gaming Nobreak`,
     description: `Acompanhe o nível (${youth.level}), medalhas e histórico de conquistas de ${youth.name} no Gaming Nobreak.`,
