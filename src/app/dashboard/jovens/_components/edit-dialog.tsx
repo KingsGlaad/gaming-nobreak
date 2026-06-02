@@ -139,9 +139,7 @@ const formSchema = z.object({
   baptism_date: z.date().optional().nullable(),
   photo_url: z.string().optional().nullable(),
   status: z.string().default("active"),
-  points: z.coerce.number().int().default(100),
 });
-
 
 async function convertToWebp(file: File): Promise<Blob> {
   return new Promise((resolve, reject) => {
@@ -167,7 +165,7 @@ async function convertToWebp(file: File): Promise<Blob> {
             }
           },
           "image/webp",
-          0.8
+          0.8,
         );
       };
       img.onerror = (err) => reject(err);
@@ -207,7 +205,6 @@ export function EditJovemDialog({
       baptism_date: null,
       photo_url: "",
       status: "active",
-      points: 100,
     },
   });
 
@@ -223,7 +220,6 @@ export function EditJovemDialog({
         baptism_date: data.baptism_date ? new Date(data.baptism_date) : null,
         photo_url: data.photo_url || "",
         status: data.status || "active",
-        points: data.points ?? 0,
       });
     } else {
       form.reset({
@@ -236,7 +232,6 @@ export function EditJovemDialog({
         baptism_date: null,
         photo_url: "",
         status: "active",
-        points: 100,
       });
     }
     setImageFile(null);
@@ -255,7 +250,11 @@ export function EditJovemDialog({
           console.error("Erro na conversão para webp:", webpError);
         }
 
-        const nicknameClean = (values.nickname?.trim() || values.name.trim().split(" ")[0] || "sem-nome")
+        const nicknameClean = (
+          values.nickname?.trim() ||
+          values.name.trim().split(" ")[0] ||
+          "sem-nome"
+        )
           .toLowerCase()
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
@@ -323,7 +322,10 @@ export function EditJovemDialog({
         <DialogHeader>
           <DialogTitle>{isEditing ? "Editar Jovem" : "Novo Jovem"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit as any)}
+          className="space-y-4"
+        >
           <Field>
             <FieldLabel>Foto do Jovem</FieldLabel>
             <FieldContent>
@@ -451,19 +453,6 @@ export function EditJovemDialog({
               )}
             />
           </div>
-
-          <Field>
-            <FieldLabel htmlFor="points">Pontos na Temporada</FieldLabel>
-            <FieldContent>
-              <Input
-                id="points"
-                type="number"
-                placeholder="Ex: 100"
-                {...form.register("points")}
-              />
-              <FieldError errors={[form.formState.errors.points]} />
-            </FieldContent>
-          </Field>
 
           <div className="flex justify-end pt-4">
             <Button type="submit" disabled={isSubmitting}>

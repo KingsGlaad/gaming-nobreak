@@ -67,27 +67,8 @@ export async function createJovem(data: {
         },
       });
 
-      const activeSeason = await tx.season.findFirst({
-        where: { is_active: true },
-      });
-
-      if (activeSeason) {
-        await tx.scoreTransaction.create({
-          data: {
-            season_id: activeSeason.id,
-            youth_id: jovem.id,
-            points: 100,
-            description: "Pontos iniciais (Boas-vindas)",
-          },
-        });
-      }
-
-      return { jovem, activeSeason };
+      return { jovem };
     });
-
-    if (result.activeSeason) {
-      await updateYouthAchievements(result.jovem.id, result.activeSeason.id);
-    }
 
     revalidatePath("/dashboard/jovens");
     return { success: true, data: result.jovem };
