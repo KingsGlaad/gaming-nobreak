@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/select";
 
 import { useSession } from "next-auth/react";
-import { getRegras } from "@/lib/services/regras";
+
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
@@ -71,9 +71,12 @@ export function AddPointsDialog({
 
   useEffect(() => {
     if (isOpen) {
-      getRegras().then((data) => {
-        setRegras(data.filter((r: any) => r.is_active));
-      });
+      fetch('/api/regras')
+        .then((res) => res.json())
+        .then((data) => {
+          setRegras(data.filter((r: any) => r.is_active));
+        })
+        .catch((err) => console.error("Erro ao carregar regras", err));
     }
   }, [isOpen]);
 

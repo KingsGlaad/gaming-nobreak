@@ -22,9 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
-import { getTiposAtividade } from "@/lib/services/atividades";
 import { useRouter } from "next/navigation";
-import { getTemporadas } from "@/lib/services/temporadas";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -76,10 +74,12 @@ export function EditAtividadeDialog({
   useEffect(() => {
     async function loadOptions() {
       try {
-        const [temps, types] = await Promise.all([
-          getTemporadas(),
-          getTiposAtividade(),
+        const [tempsRes, typesRes] = await Promise.all([
+          fetch("/api/temporadas"),
+          fetch("/api/atividades/tipos"),
         ]);
+        const temps = await tempsRes.json();
+        const types = await typesRes.json();
         setTemporadas(temps);
         setTiposAtividade(types);
       } catch (err) {

@@ -1,14 +1,9 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import {
   getCurrentSeason,
   getTopRanking,
   getUpcomingEvents,
   getAchivements,
 } from "@/lib/services/public";
-import { Ranking } from "@/types/ranking";
-import { Activity, Season, Achievement } from "@/generated/prisma/client";
 
 // Importações dos novos componentes separados
 import { HeroSection } from "./_components/hero-section";
@@ -17,26 +12,11 @@ import { TiersSection } from "./_components/tiers-section";
 import { AchievementsSection } from "./_components/achievements-section";
 import { HighlightsAndSchedule } from "./_components/highlights-and-schedule";
 
-export default function Home() {
-  const [ranking, setRanking] = useState<Ranking[]>([]);
-  const [events, setEvents] = useState<Activity[]>([]);
-  const [season, setSeason] = useState<Season | null>(null);
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
-
-  useEffect(() => {
-    async function loadData() {
-      const topRanking = await getTopRanking(2);
-      const upcomingEvents = await getUpcomingEvents(2);
-      const currentSeason = await getCurrentSeason();
-      const dbAchievements = await getAchivements();
-      
-      setRanking(topRanking);
-      setEvents(upcomingEvents);
-      setSeason(currentSeason);
-      setAchievements(dbAchievements);
-    }
-    loadData();
-  }, []);
+export default async function Home() {
+  const ranking = await getTopRanking(2);
+  const events = await getUpcomingEvents(2);
+  const season = await getCurrentSeason();
+  const achievements = await getAchivements();
 
   return (
     <div className="space-y-24 pb-16 overflow-hidden">
