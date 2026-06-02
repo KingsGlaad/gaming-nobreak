@@ -1,0 +1,277 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================
+// SEASONS (Temporadas)
+// ============================================================
+model Season {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @db.VarChar(100)
+  description String?
+  start_date  DateTime @db.Date
+  end_date    DateTime @db.Date
+  is_active   Boolean  @default(false)
+  created_at  DateTime @default(now()) @db.Timestamptz()
+  updated_at  DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  activities         Activity[]
+  point_rules        PointRule[]
+  score_transactions ScoreTransaction[]
+  youth_achievements YouthAchievement[]
+  attendance         Attendance[]
+
+  @@map("seasons")
+}
+
+// ============================================================
+// USERS (Usuários autenticados)
+// ============================================================
+model User {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String?  @db.VarChar(255)
+  email      String?  @unique @db.VarChar(255)
+  password   String?  @db.VarChar(255)
+  image      String?  @db.VarChar(255)
+  role       String   @default("youth") @db.VarChar(30)
+  created_at DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  leaders    Leader[]
+  activities Activity[]
+
+  @@map("users")
+}
+
+// ============================================================
+// YOUTHS (Jovens)
+// ============================================================
+model Youth {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String    @db.VarChar(255)
+  nickname     String?   @db.VarChar(100)
+  birth_date   DateTime? @db.Date
+  phone        String?   @db.VarChar(30)
+  instagram    String?   @db.VarChar(100)
+  baptized     Boolean   @default(false)
+  baptism_date DateTime? @db.Date
+  photo_url    String?
+  status       String    @default("active") @db.VarChar(20)
+  created_at   DateTime  @default(now()) @db.Timestamptz()
+  updated_at   DateTime  @default(now()) @db.Timestamptz()
+
+  // Relations
+  score_transactions   ScoreTransaction[]
+  youth_achievements   YouthAchievement[]
+  attendance           Attendance[]
+  visitors_responsible Visitor[]          @relation("ResponsibleYouth")
+  visitors_converted   Visitor[]          @relation("ConvertedYouth")
+
+  @@map("youths")
+}
+
+// ============================================================
+// LEADERS (Líderes)
+// ============================================================
+model Leader {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String?  @db.Uuid
+  name       String   @db.VarChar(255)
+  password   String?  @db.VarChar(255)
+  role       String   @default("Líder") @db.VarChar(30)
+  created_at DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  user               User?              @relation(fields: [user_id], references: [id], onDelete: SetNull)
+  score_transactions ScoreTransaction[]
+
+  @@map("leaders")
+}
+
+// ============================================================
+// VISITORS (Visitantes)
+// ============================================================
+model Visitor {
+  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                 String   @db.VarChar(255)
+  phone                String?  @db.VarChar(30)
+  instagram            String?  @db.VarChar(100)
+  responsible_youth_id String?  @db.Uuid
+  visit_date           DateTime @default(now()) @db.Date
+  notes                String?
+  converted_to_youth   Boolean  @default(false)
+  converted_youth_id   String?  @db.Uuid
+  created_at           DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  responsible_youth Youth? @relation("ResponsibleYouth", fields: [responsible_youth_id], references: [id], onDelete: SetNull)
+  converted_youth   Youth? @relation("ConvertedYouth", fields: [converted_youth_id], references: [id], onDelete: SetNull)
+
+  @@map("visitors")
+}
+
+// ============================================================
+// ACTIVITY TYPES (Tipos de Atividade)
+// ============================================================
+model ActivityType {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String  @db.VarChar(255)
+  slug        String  @unique @db.VarChar(100)
+  description String?
+
+  // Relations
+  activities Activity[]
+
+  @@map("activity_types")
+}
+
+// ============================================================
+// ACTIVITIES (Atividades)
+// ============================================================
+model Activity {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  season_id        String?  @db.Uuid
+  activity_type_id String?  @db.Uuid
+  title            String   @db.VarChar(255)
+  description      String?
+  activity_date    DateTime @db.Timestamptz()
+  created_by       String?  @db.Uuid
+  created_at       DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  season             Season?            @relation(fields: [season_id], references: [id], onDelete: Cascade)
+  activity_type      ActivityType?      @relation(fields: [activity_type_id], references: [id], onDelete: SetNull)
+  creator            User?              @relation(fields: [created_by], references: [id], onDelete: SetNull)
+  attendance         Attendance[]
+  score_transactions ScoreTransaction[]
+
+  @@map("activities")
+}
+
+// ============================================================
+// ATTENDANCE (Presença)
+// ============================================================
+model Attendance {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  season_id   String?  @db.Uuid
+  activity_id String   @db.Uuid
+  youth_id    String   @db.Uuid
+  status      String   @default("present") @db.VarChar(20)
+  created_at  DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  season   Season?  @relation(fields: [season_id], references: [id], onDelete: Cascade)
+  activity Activity @relation(fields: [activity_id], references: [id], onDelete: Cascade)
+  youth    Youth    @relation(fields: [youth_id], references: [id], onDelete: Cascade)
+
+  @@unique([activity_id, youth_id])
+  @@map("attendance")
+}
+
+// ============================================================
+// POINT RULES (Regras de Pontuação)
+// ============================================================
+model PointRule {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  season_id   String?  @db.Uuid
+  name        String   @db.VarChar(255)
+  slug        String   @unique @db.VarChar(100)
+  description String?
+  points      Int
+  category    String?  @db.VarChar(100)
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now()) @db.Timestamptz()
+  updated_at  DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  season             Season?            @relation(fields: [season_id], references: [id], onDelete: Cascade)
+  score_transactions ScoreTransaction[]
+
+  @@map("point_rules")
+}
+
+// ============================================================
+// SCORE TRANSACTIONS (Transações de Pontos)
+// ============================================================
+model ScoreTransaction {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  season_id     String?  @db.Uuid
+  youth_id      String   @db.Uuid
+  activity_id   String?  @db.Uuid
+  point_rule_id String?  @db.Uuid
+  leader_id     String?  @db.Uuid
+  points        Int
+  description   String?
+  created_at    DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  season     Season?    @relation(fields: [season_id], references: [id], onDelete: Cascade)
+  youth      Youth      @relation(fields: [youth_id], references: [id], onDelete: Cascade)
+  activity   Activity?  @relation(fields: [activity_id], references: [id], onDelete: SetNull)
+  point_rule PointRule? @relation(fields: [point_rule_id], references: [id], onDelete: SetNull)
+  leader     Leader?    @relation(fields: [leader_id], references: [id], onDelete: SetNull)
+
+  @@map("score_transactions")
+}
+
+// ============================================================
+// ACHIEVEMENTS (Conquistas)
+// ============================================================
+model Achievement {
+  id              String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String  @db.VarChar(255)
+  description     String?
+  icon            String? @db.VarChar(255)
+  condition_type  String  @db.VarChar(100)
+  condition_value Int
+  points          Int     @default(0)
+
+  // Relations
+  youth_achievements YouthAchievement[]
+
+  @@map("achievements")
+}
+
+// ============================================================
+// YOUTH ACHIEVEMENTS (Conquistas dos Jovens)
+// ============================================================
+model YouthAchievement {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  season_id      String   @db.Uuid
+  youth_id       String   @db.Uuid
+  achievement_id String   @db.Uuid
+  created_at     DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  season      Season      @relation(fields: [season_id], references: [id], onDelete: Cascade)
+  youth       Youth       @relation(fields: [youth_id], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievement_id], references: [id], onDelete: Cascade)
+
+  @@unique([season_id, youth_id, achievement_id])
+  @@map("youth_achievements")
+}
+
+// ============================================================
+// LEVELS (Níveis)
+// ============================================================
+model Level {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String  @db.VarChar(100)
+  min_points  Int
+  max_points  Int?
+  icon        String? @db.VarChar(255)
+  order_index Int
+
+  @@map("levels")
+}
