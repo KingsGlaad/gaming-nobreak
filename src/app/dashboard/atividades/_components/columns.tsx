@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react"
+import { useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,15 +12,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
-import { GlobalDeleteDialog } from "@/components/shared/global-delete-dialog"
-import { EditAtividadeDialog } from "./edit-dialog"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
-import { Activity } from "@prisma/client"
-import { deleteAtividade } from "@/actions/atividades"
-import { toast } from "sonner"
+import { GlobalDeleteDialog } from "@/components/shared/global-delete-dialog";
+import { EditAtividadeDialog } from "./edit-dialog";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { deleteAtividade } from "@/actions/atividades";
+import { toast } from "sonner";
+import { Activity } from "@/generated/prisma/client";
 
 export const columns: ColumnDef<Activity>[] = [
   {
@@ -31,33 +31,37 @@ export const columns: ColumnDef<Activity>[] = [
     accessorKey: "activity_date",
     header: "Data da Atividade",
     cell: ({ row }) => {
-      const date = new Date(row.original.activity_date)
-      return format(date, "dd 'de' MMMM, yyyy 'às' HH:mm", { locale: ptBR })
-    }
+      const date = new Date(row.original.activity_date);
+      return format(date, "dd 'de' MMMM, yyyy 'às' HH:mm", { locale: ptBR });
+    },
   },
   {
     accessorKey: "description",
     header: "Descrição",
     cell: ({ row }) => {
-      return <div className="max-w-[300px] truncate">{row.original.description || "-"}</div>
-    }
+      return (
+        <div className="max-w-[300px] truncate">
+          {row.original.description || "-"}
+        </div>
+      );
+    },
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const atividade = row.original
-      const [deleteOpen, setDeleteOpen] = useState(false)
-      const [editOpen, setEditOpen] = useState(false)
+      const atividade = row.original;
+      const [deleteOpen, setDeleteOpen] = useState(false);
+      const [editOpen, setEditOpen] = useState(false);
 
       const handleDelete = async () => {
-        const res = await deleteAtividade(atividade.id)
+        const res = await deleteAtividade(atividade.id);
         if (res.success) {
-          toast.success("Atividade excluída com sucesso!")
+          toast.success("Atividade excluída com sucesso!");
         } else {
-          toast.error(res.error || "Erro ao excluir.")
+          toast.error(res.error || "Erro ao excluir.");
         }
-        setDeleteOpen(false)
-      }
+        setDeleteOpen(false);
+      };
 
       return (
         <>
@@ -99,7 +103,7 @@ export const columns: ColumnDef<Activity>[] = [
             onConfirm={handleDelete}
           />
         </>
-      )
+      );
     },
   },
-]
+];
