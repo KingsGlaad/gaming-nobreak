@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Menu } from "lucide-react";
+import { useState, useEffect } from "react";
 import {
   Sheet,
   SheetContent,
@@ -13,8 +14,33 @@ import {
 } from "@/components/ui/sheet";
 
 export function PublicHeader() {
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // Oculta ao rolar para baixo, mostra ao rolar para cima
+      if (currentScrollY > lastScrollY && currentScrollY > 80) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/60 backdrop-blur-xl">
+    <header 
+      className={`sticky top-0 z-50 w-full border-b border-border/50 bg-background/60 backdrop-blur-xl transition-transform duration-300 ease-in-out ${
+        isVisible ? "translate-y-0" : "-translate-y-full"
+      }`}
+    >
       <div className="container flex h-16 items-center justify-between mx-auto px-4 md:px-8">
         <Link href="/" className="flex items-center gap-2 group">
           <div className="h-8 w-8 rounded-lg flex items-center justify-center shadow-[0_0_10px_rgba(var(--primary),0.3)] group-hover:shadow-[0_0_20px_rgba(var(--primary),0.6)] transition-all">

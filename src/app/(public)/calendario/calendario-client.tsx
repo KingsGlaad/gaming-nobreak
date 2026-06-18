@@ -36,8 +36,8 @@ export function CalendarioClient({ initialEvents }: CalendarioClientProps) {
       <div className="space-y-16">
         {Object.entries(groupedEvents).map(([month, events]) => (
           <div key={month} className="space-y-6 relative">
-            {/* Cabeçalho do mês com estilo criativo e sticky */}
-            <div className="flex items-center gap-4 sticky top-[72px] z-10 bg-background/80 backdrop-blur-md py-4 -mx-4 px-4 md:mx-0 md:px-0 rounded-b-xl border-b md:border-none shadow-[0_4px_20px_-15px_rgba(0,0,0,0.1)] md:shadow-none">
+            {/* Cabeçalho do mês com estilo criativo sem sticky */}
+            <div className="flex items-center gap-4 bg-background/80 backdrop-blur-md py-4 -mx-4 px-4 md:mx-0 md:px-0 rounded-b-xl border-b md:border-none shadow-[0_4px_20px_-15px_rgba(0,0,0,0.1)] md:shadow-none">
               <div className="bg-primary/10 p-2.5 rounded-xl border border-primary/20 shadow-sm">
                 <Calendar className="h-6 w-6 text-primary" />
               </div>
