@@ -6,6 +6,8 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "sonner";
 import { NextAuthSessionProvider } from "@/components/providers/session-provider";
 
+import { ProgressBarProvider } from "@/components/providers/progressbar-provider";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -40,7 +42,9 @@ export default function RootLayout({
             enableSystem={false}
             disableTransitionOnChange
           >
-            <NextAuthSessionProvider>{children}</NextAuthSessionProvider>
+            <ProgressBarProvider>
+              <NextAuthSessionProvider>{children}</NextAuthSessionProvider>
+            </ProgressBarProvider>
             <Toaster richColors />
           </ThemeProvider>
         </TooltipProvider>

@@ -63,7 +63,7 @@ export function AchievementsSection({
         </p>
       </motion.div>
 
-      <div className="flex flex-wrap justify-center gap-8 md:gap-16">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-16 justify-items-center max-w-4xl mx-auto">
         {displayAchievements.map((ach, index) => (
           <motion.div
             key={ach.id}

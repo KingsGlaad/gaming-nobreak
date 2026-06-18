@@ -19,6 +19,7 @@ import {
   FolderIcon,
   UsersIcon,
   CommandIcon,
+  Trophy,
 } from "lucide-react";
 import { NavMain } from "./nav-main";
 
@@ -58,6 +59,11 @@ const data = {
       title: "Regras de Pontuação",
       url: "/dashboard/regras",
       icon: <FolderIcon />,
+    },
+    {
+      title: "Conquistas",
+      url: "/dashboard/conquistas",
+      icon: <Trophy />,
     },
   ],
 };

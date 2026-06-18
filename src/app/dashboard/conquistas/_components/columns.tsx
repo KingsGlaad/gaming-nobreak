@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, PlusCircle, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,96 +17,79 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 import { GlobalDeleteDialog } from "@/components/shared/global-delete-dialog";
-import { AddPointsDialog } from "@/components/shared/add-points-dialog";
-import { EditJovemDialog } from "./edit-dialog";
+import { EditConquistaDialog } from "./edit-dialog";
+import { Achievement } from "@/generated/prisma/client";
 
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Youth } from "@/generated/prisma/client";
-import { format } from "date-fns";
 
-export type YouthWithPoints = Youth & { points?: number };
-
-export const columns: ColumnDef<YouthWithPoints>[] = [
+export const columns: ColumnDef<Achievement>[] = [
   {
-    accessorKey: "points",
-    header: "Pontos",
+    accessorKey: "icon",
+    header: "Ícone",
     cell: ({ row }) => {
-      return <span className="font-bold text-primary">{row.original.points || 0}</span>;
+      const icon = row.original.icon;
+      return <div className="text-2xl">{icon || "🏆"}</div>;
     },
   },
   {
     accessorKey: "name",
     header: "Nome",
-  },
-  {
-    accessorKey: "nickname",
-    header: "Apelido",
     cell: ({ row }) => {
-      return row.original.nickname || "-";
+      return <span className="font-semibold">{row.original.name}</span>;
     },
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "description",
+    header: "Descrição",
     cell: ({ row }) => {
-      const status = row.original.status;
+      return <span className="text-muted-foreground">{row.original.description || "-"}</span>;
+    },
+  },
+  {
+    accessorKey: "condition",
+    header: "Condição",
+    cell: ({ row }) => {
+      const type = row.original.condition_type;
+      const value = row.original.condition_value;
+      let label = "";
+      if (type === "points") label = `≥ ${value} XP`;
+      else if (type === "visitors") label = `≥ ${value} Visitantes`;
+      else label = `${type} = ${value}`;
+
       return (
-        <Badge variant={status === "active" ? "default" : "secondary"}>
-          {status === "active" ? "Ativo" : "Inativo"}
+        <Badge variant="outline" className="bg-primary/5">
+          {label}
         </Badge>
       );
     },
   },
   {
-    accessorKey: "baptized",
-    header: "Batizado",
+    accessorKey: "points",
+    header: "Prêmio (Pontos)",
     cell: ({ row }) => {
-      return row.original.baptized ? "Sim" : "Não";
-    },
-  },
-  {
-    accessorKey: "birth_date",
-    header: "Data de Nascimento",
-    cell: ({ row }) => {
-      const date = row.original.birth_date;
-      if (!date) return "-";
-      const d = new Date(date);
-      const correctedDate = new Date(
-        d.getTime() + d.getTimezoneOffset() * 60000,
+      const points = row.original.points;
+      return (
+        <span className="font-bold text-gradient-yellow">
+          {points > 0 ? `+${points}` : points}
+        </span>
       );
-      return format(correctedDate, "dd/MM/yyyy");
-    },
-  },
-  {
-    accessorKey: "baptism_date",
-    header: "Data do Batismo",
-    cell: ({ row }) => {
-      const date = row.original.baptism_date;
-      if (!date) return "-";
-      const d = new Date(date);
-      const correctedDate = new Date(
-        d.getTime() + d.getTimezoneOffset() * 60000,
-      );
-      return format(correctedDate, "dd/MM/yyyy");
     },
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const jovem = row.original;
+      const conquista = row.original;
       const [deleteOpen, setDeleteOpen] = useState(false);
       const [editOpen, setEditOpen] = useState(false);
-      const [addPointsOpen, setAddPointsOpen] = useState(false);
-
       const router = useRouter();
 
       const handleDelete = async () => {
         try {
-          const res = await fetch(`/api/jovens/${jovem.id}`, { method: "DELETE" });
+          const res = await fetch(`/api/conquistas/${conquista.id}`, { method: "DELETE" });
           const data = await res.json();
           if (res.ok && data.success) {
-            toast.success("Jovem inativado com sucesso!");
+            toast.success("Conquista excluída com sucesso!");
             router.refresh();
           } else {
             toast.error(data.error || "Erro ao excluir.");
@@ -119,16 +102,7 @@ export const columns: ColumnDef<YouthWithPoints>[] = [
 
       return (
         <>
-          <div className="flex items-center justify-end gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 border-dashed"
-              onClick={() => setAddPointsOpen(true)}
-            >
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Dar Pontos
-            </Button>
+          <div className="flex items-center justify-end">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
@@ -154,17 +128,10 @@ export const columns: ColumnDef<YouthWithPoints>[] = [
             </DropdownMenu>
           </div>
 
-          <AddPointsDialog
-            isOpen={addPointsOpen}
-            onOpenChange={setAddPointsOpen}
-            jovemId={jovem.id}
-            jovemName={jovem.name}
-          />
-
-          <EditJovemDialog
+          <EditConquistaDialog
             isOpen={editOpen}
             onOpenChange={setEditOpen}
-            data={jovem}
+            data={conquista}
           />
 
           <GlobalDeleteDialog
