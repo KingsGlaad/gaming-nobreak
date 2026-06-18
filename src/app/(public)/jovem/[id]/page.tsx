@@ -72,27 +72,31 @@ export default async function YouthProfilePage({
 
   const levelColors: Record<
     string,
-    { border: string; text: string; bg: string }
+    { border: string; text: string; bg: string; gradient: string }
   > = {
     Bronze: {
       border: "border-amber-700/30",
       text: "text-amber-700 dark:text-amber-500",
       bg: "bg-amber-700/10",
+      gradient: "bg-gradient-to-br from-amber-500 via-amber-700 to-amber-900",
     },
     Prata: {
       border: "border-slate-400/30",
       text: "text-slate-400",
       bg: "bg-slate-400/10",
+      gradient: "bg-gradient-to-br from-slate-300 via-slate-400 to-slate-600",
     },
     Ouro: {
       border: "border-yellow-500/30",
       text: "text-yellow-500",
       bg: "bg-yellow-500/10",
+      gradient: "bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-700",
     },
     Diamante: {
       border: "border-cyan-400/30",
       text: "text-cyan-400 dark:text-cyan-400",
       bg: "bg-cyan-400/10",
+      gradient: "bg-gradient-to-br from-cyan-300 via-cyan-500 to-blue-600",
     },
   };
 
@@ -100,6 +104,7 @@ export default async function YouthProfilePage({
     border: "border-primary/30",
     text: "text-primary",
     bg: "bg-primary/10",
+    gradient: "bg-gradient-to-br from-primary/50 to-primary",
   };
 
   return (
@@ -117,6 +122,10 @@ export default async function YouthProfilePage({
 
         {/* Profile Header */}
         <div className="flex flex-col md:flex-row gap-8 items-center md:items-start p-6 md:p-8 rounded-2xl bg-card/60 border border-border/50 backdrop-blur-xl shadow-lg relative overflow-hidden">
+          {/* Subtle gradient background for the entire card */}
+          <div
+            className={`absolute inset-0 opacity-15 mix-blend-overlay md:opacity-20 ${currentLevelColor.gradient}`}
+          />
           <div className="absolute top-0 right-0 p-4 pointer-events-none select-none">
             <Image
               src={`/badges/${youth.level.toLowerCase()}.png`}
@@ -127,18 +136,30 @@ export default async function YouthProfilePage({
             />
           </div>
 
-          <Avatar className="h-32 w-32 md:h-40 md:w-40 shrink-0 rounded-full border-4 border-primary/20 shadow-xl z-10">
-            {youth.photo_url ? (
-              <AvatarImage
-                src={youth.photo_url}
-                alt={youth.name}
-                className="object-cover"
-              />
-            ) : null}
-            <AvatarFallback className="text-4xl font-bold bg-muted text-muted-foreground">
-              {youth.name.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
+          {/* The avatar container with modern gradient glow and border */}
+          <div className="relative shrink-0 flex items-center justify-center">
+            {/* Background Glow */}
+            <div
+              className={`absolute inset-0 rounded-full blur-xl opacity-60 animate-pulse ${currentLevelColor.gradient}`}
+            />
+            {/* Avatar Border Gradient */}
+            <div
+              className={`p-1.5 rounded-full shadow-2xl relative z-10 ${currentLevelColor.gradient}`}
+            >
+              <Avatar className="h-32 w-32 md:h-40 md:w-40 rounded-full border-4 border-background object-cover bg-background">
+                {youth.photo_url ? (
+                  <AvatarImage
+                    src={youth.photo_url}
+                    alt={youth.name}
+                    className="object-cover"
+                  />
+                ) : null}
+                <AvatarFallback className="text-4xl font-bold bg-muted text-muted-foreground">
+                  {youth.name.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
 
           <div className="flex-1 text-center md:text-left space-y-4 relative z-10">
             <div>
