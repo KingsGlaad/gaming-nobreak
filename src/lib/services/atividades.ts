@@ -1,12 +1,10 @@
-
-
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export async function getAtividades() {
   try {
     const atividades = await prisma.activity.findMany({
-      orderBy: { activity_date: "desc" },
+      orderBy: { activity_date: "asc" },
       include: {
         season: true,
         activity_type: true,

@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "seed:initial": "tsx prisma/seed.ts",
-    "seed:admin": "tsx scripts/seed-admin.ts"
+    "seed:admin": "tsx scripts/seed-admin.ts",
+    "seed:activities": "tsx scripts/seed-activities.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

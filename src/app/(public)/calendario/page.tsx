@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function CalendarPage() {
-  const events = await getUpcomingEvents(10);
+  const events = await getUpcomingEvents(50);
 
   return <CalendarioClient initialEvents={events} />;
 }
