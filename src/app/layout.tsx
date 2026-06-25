@@ -44,8 +44,8 @@ export default function RootLayout({
           >
             <ProgressBarProvider>
               <NextAuthSessionProvider>{children}</NextAuthSessionProvider>
+              <Toaster richColors />
             </ProgressBarProvider>
-            <Toaster richColors />
           </ThemeProvider>
         </TooltipProvider>
       </body>

@@ -22,11 +22,17 @@ export function PublicFooter() {
             reservados.
           </div>
           <div className="text-sm text-muted-foreground flex gap-4">
-            <a href="#" className="hover:text-primary transition-colors">
-              Termos
+            <a
+              href="/regulamento"
+              className="hover:text-primary transition-colors"
+            >
+              Regulamento
             </a>
-            <a href="#" className="hover:text-primary transition-colors">
-              Privacidade
+            <a
+              href="/privacidade"
+              className="hover:text-primary transition-colors"
+            >
+              Termos e Privacidade
             </a>
           </div>
         </div>
