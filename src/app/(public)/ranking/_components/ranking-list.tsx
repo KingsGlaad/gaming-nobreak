@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import Image from "next/image";
 
 interface RankingItem {
   id: string;
@@ -91,6 +92,22 @@ export function RankingList({ initialRanking }: RankingListProps) {
     // Limitar também a busca aos 10 primeiros resultados correspondentes
     return filtered.slice(0, 10);
   }, [rankedItems, searchTerm]);
+
+  // Lista de todos os jovens, ordenada alfabeticamente
+  const alphabeticalRanking = useMemo(() => {
+    return [...rankedItems].sort((a, b) => a.name.localeCompare(b.name));
+  }, [rankedItems]);
+
+  const filteredAlphabetical = useMemo(() => {
+    const lowerSearch = searchTerm.toLowerCase().trim();
+    if (!lowerSearch) return alphabeticalRanking;
+
+    return alphabeticalRanking.filter(
+      (item) =>
+        item.name.toLowerCase().includes(lowerSearch) ||
+        item.nickname.toLowerCase().includes(lowerSearch),
+    );
+  }, [alphabeticalRanking, searchTerm]);
 
   return (
     <div className="space-y-6">
@@ -190,6 +207,101 @@ export function RankingList({ initialRanking }: RankingListProps) {
                 ))}
               </TableBody>
             </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="border-border/50 bg-card/40 backdrop-blur-sm mt-12">
+        <CardHeader className="pb-4">
+          <CardTitle>Todos os Participantes</CardTitle>
+          <CardDescription>Lista completa de participantes.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {filteredAlphabetical.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Nenhum participante encontrado.
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 pt-4">
+              {filteredAlphabetical.map((youth) => {
+                let borderClass =
+                  "border-amber-700 shadow-[0_0_15px_rgba(180,83,9,0.3)]";
+                let textClass = "text-amber-700";
+                const lvl = youth.level.toLowerCase();
+
+                if (lvl === "diamante") {
+                  borderClass =
+                    "border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.4)]";
+                  textClass = "text-cyan-400";
+                } else if (lvl === "ouro") {
+                  borderClass =
+                    "border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.4)]";
+                  textClass = "text-yellow-400";
+                } else if (lvl === "prata") {
+                  borderClass =
+                    "border-slate-300 shadow-[0_0_15px_rgba(203,213,225,0.4)]";
+                  textClass = "text-slate-300";
+                }
+
+                return (
+                  <Link
+                    href={`/jovem/${youth.nickname || youth.id}`}
+                    key={youth.id}
+                  >
+                    <div
+                      className={`relative flex flex-col items-center p-3 transition-transform hover:-translate-y-1 hover:scale-105 cursor-pointer`}
+                    >
+                      {/* Badge de Posição (Rank Global) */}
+                      <div className="absolute -top-2 -right-2 h-7 w-7 flex items-center justify-center rounded-full bg-background border border-primary text-primary font-bold text-xs shadow-md z-10">
+                        #{youth.rank}
+                      </div>
+
+                      {/* Avatar */}
+                      <div
+                        className={`h-16 w-16 rounded-full overflow-hidden border-2 mb-2 bg-muted flex items-center justify-center ${borderClass}`}
+                      >
+                        {youth.photo_url ? (
+                          <Image
+                            src={youth.photo_url}
+                            alt={youth.name}
+                            className="h-full w-full object-cover"
+                            width={100}
+                            height={100}
+                            unoptimized
+                          />
+                        ) : (
+                          <Trophy className={`h-10 w-10 ${textClass}`} />
+                        )}
+                      </div>
+
+                      {/* Info */}
+                      <h3 className="font-bold text-sm text-center leading-tight line-clamp-1 w-full">
+                        {youth.name}
+                      </h3>
+                      {youth.nickname && (
+                        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+                          {youth.nickname}
+                        </p>
+                      )}
+
+                      <div className="mt-2 flex flex-col items-center gap-1">
+                        <span
+                          className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-background/50 border ${borderClass} ${textClass}`}
+                        >
+                          {youth.level}
+                        </span>
+                        <div className="font-black text-lg text-foreground mt-1">
+                          {youth.points}{" "}
+                          <span className="text-xs font-medium text-muted-foreground">
+                            pts
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
           )}
         </CardContent>
       </Card>

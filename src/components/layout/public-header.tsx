@@ -36,7 +36,7 @@ export function PublicHeader() {
   }, [lastScrollY]);
 
   return (
-    <header 
+    <header
       className={`sticky top-0 z-50 w-full border-b border-border/50 bg-background/60 backdrop-blur-xl transition-transform duration-300 ease-in-out ${
         isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
@@ -76,6 +76,14 @@ export function PublicHeader() {
             Calendário
           </Link>
         </nav>
+
+        <div className="hidden md:flex gap-4 items-center">
+          <Link href="/registro">
+            <Button className="text-sm font-medium rounded-full px-6 shadow-[0_0_15px_rgba(var(--primary),0.3)] hover:shadow-[0_0_20px_rgba(var(--primary),0.5)] transition-all">
+              Cadastre-se
+            </Button>
+          </Link>
+        </div>
 
         {/* Menu Mobile */}
         <div className="md:hidden flex items-center gap-4">
@@ -129,6 +137,16 @@ export function PublicHeader() {
                 >
                   Calendário
                 </Link>
+                <div className="flex flex-col gap-3 mt-4">
+                  <Link href="/login" className="w-full">
+                    <Button variant="outline" className="w-full text-lg h-12">
+                      Entrar
+                    </Button>
+                  </Link>
+                  <Link href="/registro" className="w-full">
+                    <Button className="w-full text-lg h-12">Cadastre-se</Button>
+                  </Link>
+                </div>
               </nav>
             </SheetContent>
           </Sheet>

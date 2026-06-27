@@ -77,6 +77,14 @@ export function HeroSection({ season }: HeroSectionProps) {
             Ver Ranking
           </Button>
         </Link>
+        <Link href="/registro">
+          <Button
+            size="lg"
+            className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground transition-all h-14 px-8 text-lg rounded-full hover:scale-105 shadow-[0_0_20px_rgba(var(--primary),0.4)] hover:shadow-[0_0_30px_rgba(var(--primary),0.6)]"
+          >
+            Começar Agora
+          </Button>
+        </Link>
       </motion.div>
     </section>
   );
