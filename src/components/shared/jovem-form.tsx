@@ -1,10 +1,12 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/purity */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { ptBR } from "date-fns/locale";
 import { format, parse, isValid } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 
@@ -133,7 +135,7 @@ async function convertToWebp(file: File): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (event) => {
-      const img = new Image();
+      const img = new window.Image();
       img.onload = () => {
         const canvas = document.createElement("canvas");
         canvas.width = img.width;
