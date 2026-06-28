@@ -150,11 +150,6 @@ export function PublicHeader() {
                   Calendário
                 </Link>
                 <div className="flex flex-col gap-3 mt-4">
-                  <Link href="/login" className="w-full">
-                    <Button variant="outline" className="w-full text-lg h-12">
-                      Entrar
-                    </Button>
-                  </Link>
                   <Link href="/registro" className="w-full">
                     <Button className="w-full text-lg h-12">Cadastre-se</Button>
                   </Link>
