@@ -70,6 +70,12 @@ export function PublicHeader() {
             Ranking
           </Link>
           <Link
+            href="/pontuacao"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Regras
+          </Link>
+          <Link
             href="/calendario"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
@@ -130,6 +136,12 @@ export function PublicHeader() {
                   className="text-lg font-medium text-foreground/80 hover:text-primary transition-colors border-b border-border/50 pb-2"
                 >
                   Ranking
+                </Link>
+                <Link
+                  href="/pontuacao"
+                  className="text-lg font-medium text-foreground/80 hover:text-primary transition-colors border-b border-border/50 pb-2"
+                >
+                  Regras
                 </Link>
                 <Link
                   href="/calendario"

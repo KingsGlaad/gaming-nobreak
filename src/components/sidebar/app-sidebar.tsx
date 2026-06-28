@@ -41,6 +41,11 @@ const data = {
       icon: <UsersIcon />,
     },
     {
+      title: "Pontuação",
+      url: "/dashboard/pontuacao",
+      icon: <Trophy />,
+    },
+    {
       title: "Líderes",
       url: "/dashboard/lideres",
       icon: <CommandIcon />,

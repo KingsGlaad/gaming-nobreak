@@ -118,7 +118,7 @@ export function LoginForm() {
               </p>
             )}
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2 mb-6">
             <div className="flex items-center justify-between">
               <Label htmlFor="password" className="text-sm md:text-base">
                 Senha
@@ -145,10 +145,10 @@ export function LoginForm() {
             )}
           </div>
         </CardContent>
-        <CardFooter className="pt-4 md:pt-2">
+        <CardFooter className="pt-4 md:pt-2 px-6 pb-6">
           <Button
             type="submit"
-            className="w-full min-h-[48px] md:min-h-[40px] text-base font-bold bg-gradient-to-r from-gradient-yellow to-gradient-yellow-end text-black hover:opacity-90 transition-all shadow-[0_0_15px_var(--color-gradient-yellow)] hover:shadow-[0_0_25px_var(--color-gradient-yellow)] border-0"
+            className="mt-6 w-full min-h-[48px] md:min-h-[40px] text-base font-bold bg-linear-to-r from-gradient-yellow to-gradient-yellow-end text-black hover:opacity-90 transition-all shadow-[0_0_15px_var(--color-gradient-yellow)] hover:shadow-[0_0_25px_var(--color-gradient-yellow)] border-0 py-5"
             disabled={isLoading}
           >
             {isLoading ? (

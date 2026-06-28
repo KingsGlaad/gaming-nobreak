@@ -238,10 +238,6 @@ export function DataTable<TData, TValue>({
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="outline" size="sm">
-            <PlusIcon />
-            <span className="hidden lg:inline">Adicionar</span>
-          </Button>
         </div>
       </div>
 
