@@ -52,6 +52,20 @@ export async function createJovem(data: {
   status: string;
 }) {
   try {
+    if (data.nickname) {
+      const existing = await prisma.youth.findFirst({
+        where: {
+          nickname: {
+            equals: data.nickname,
+            mode: 'insensitive'
+          }
+        }
+      });
+      if (existing) {
+        return { success: false, error: "Este apelido já está em uso por outro jovem." };
+      }
+    }
+
     const result = await prisma.$transaction(async (tx) => {
       const jovem = await tx.youth.create({
         data: {
@@ -102,6 +116,21 @@ export async function updateJovem(
   },
 ) {
   try {
+    if (data.nickname) {
+      const existing = await prisma.youth.findFirst({
+        where: {
+          nickname: {
+            equals: data.nickname,
+            mode: 'insensitive'
+          },
+          id: { not: id }
+        }
+      });
+      if (existing) {
+        return { success: false, error: "Este apelido já está em uso por outro jovem." };
+      }
+    }
+
     const result = await prisma.$transaction(async (tx) => {
       const jovem = await tx.youth.update({
         where: { id },

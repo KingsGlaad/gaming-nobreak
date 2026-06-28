@@ -226,6 +226,45 @@ export function JovemForm({
     setImageFile(null);
   }, [data, form]);
 
+  const nicknameValue = form.watch("nickname");
+
+  useEffect(() => {
+    if (!nicknameValue) {
+      if (form.formState.errors.nickname?.type === "manual") {
+        form.clearErrors("nickname");
+      }
+      return;
+    }
+
+    const delayDebounceFn = setTimeout(async () => {
+      try {
+        const url = new URL("/api/jovens/check-nickname", window.location.origin);
+        url.searchParams.set("nickname", nicknameValue);
+        if (isEditing && data?.id) {
+          url.searchParams.set("ignoreId", data.id);
+        }
+
+        const res = await fetch(url.toString());
+        const json = await res.json();
+
+        if (json.exists) {
+          form.setError("nickname", {
+            type: "manual",
+            message: "Este apelido já está em uso por outro jovem.",
+          });
+        } else {
+          if (form.formState.errors.nickname?.type === "manual") {
+            form.clearErrors("nickname");
+          }
+        }
+      } catch (e) {
+        console.error("Erro ao checar apelido:", e);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [nicknameValue, isEditing, data?.id, form]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
@@ -471,7 +510,7 @@ export function JovemForm({
       <div className="flex justify-end pt-4">
         <Button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || !!form.formState.errors.nickname}
           className={isPublic ? "w-full md:w-auto" : ""}
         >
           {isSubmitting ? "Salvando..." : isPublic ? "Registrar" : "Salvar"}
