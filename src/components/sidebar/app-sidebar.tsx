@@ -46,6 +46,11 @@ const data = {
       icon: <Trophy />,
     },
     {
+      title: "Visitantes",
+      url: "/dashboard/visitantes",
+      icon: <UsersIcon />,
+    },
+    {
       title: "Líderes",
       url: "/dashboard/lideres",
       icon: <CommandIcon />,

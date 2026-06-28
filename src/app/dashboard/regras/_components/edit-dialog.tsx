@@ -179,6 +179,7 @@ export function EditRegraDialog({
                         <SelectItem value="Disciplina">Disciplina</SelectItem>
                         <SelectItem value="Tarefas">Tarefas</SelectItem>
                         <SelectItem value="Eventos">Eventos</SelectItem>
+                        <SelectItem value="EBD">EBD</SelectItem>
                         <SelectItem value="Outros">Outros</SelectItem>
                       </SelectContent>
                     </Select>

@@ -7,6 +7,8 @@ import { Toaster } from "sonner";
 import { NextAuthSessionProvider } from "@/components/providers/session-provider";
 
 import { ProgressBarProvider } from "@/components/providers/progressbar-provider";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
@@ -45,6 +47,8 @@ export default function RootLayout({
             <ProgressBarProvider>
               <NextAuthSessionProvider>{children}</NextAuthSessionProvider>
               <Toaster richColors />
+              <SpeedInsights />
+              <Analytics />
             </ProgressBarProvider>
           </ThemeProvider>
         </TooltipProvider>

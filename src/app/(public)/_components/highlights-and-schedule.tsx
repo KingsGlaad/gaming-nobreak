@@ -34,34 +34,45 @@ export function HighlightsAndSchedule({ ranking, events }: HighlightsAndSchedule
             <CardContent>
               <div className="space-y-4">
                 {ranking.length > 0 ? (
-                  ranking.map((user, index) => (
-                    <div
-                      key={user.id}
-                      className={`flex items-center gap-4 p-3 rounded-lg ${
-                        index === 0
-                          ? "bg-primary/10 border border-primary/20 hover:bg-primary/20"
-                          : "bg-secondary/10 border border-secondary/20 hover:bg-secondary/20"
-                      } transition-colors`}
-                    >
-                      <div
-                        className={`flex items-center justify-center h-8 w-8 rounded-full ${
-                          index === 0
-                            ? "bg-gradient-yellow/20 text-gradient-yellow font-bold shadow-[0_0_10px_var(--color-gradient-yellow)]"
-                            : "bg-gray-400/20 text-gray-400 font-bold"
-                        }`}
-                      >
-                        {index + 1}
-                      </div>
-                      <div className="flex-1 font-medium">{user.name}</div>
-                      <div
-                        className={`${
-                          index === 0 ? "text-primary" : "text-secondary"
-                        } font-bold`}
-                      >
-                        {user.points} pts
-                      </div>
-                    </div>
-                  ))
+                  (() => {
+                    let currentRank = 0;
+                    let previousPoints = -1;
+                    return ranking.map((user, index) => {
+                      if (user.points !== previousPoints) {
+                        currentRank++;
+                        previousPoints = user.points;
+                      }
+                      
+                      return (
+                        <div
+                          key={user.id}
+                          className={`flex items-center gap-4 p-3 rounded-lg ${
+                            currentRank === 1
+                              ? "bg-primary/10 border border-primary/20 hover:bg-primary/20"
+                              : "bg-secondary/10 border border-secondary/20 hover:bg-secondary/20"
+                          } transition-colors`}
+                        >
+                          <div
+                            className={`flex items-center justify-center h-8 w-8 rounded-full ${
+                              currentRank === 1
+                                ? "bg-gradient-yellow/20 text-gradient-yellow font-bold shadow-[0_0_10px_var(--color-gradient-yellow)]"
+                                : "bg-gray-400/20 text-gray-400 font-bold"
+                            }`}
+                          >
+                            {currentRank}
+                          </div>
+                          <div className="flex-1 font-medium">{user.name}</div>
+                          <div
+                            className={`${
+                              currentRank === 1 ? "text-primary" : "text-secondary"
+                            } font-bold`}
+                          >
+                            {user.points} pts
+                          </div>
+                        </div>
+                      );
+                    });
+                  })()
                 ) : (
                   <div className="text-sm text-muted-foreground text-center py-4">
                     Nenhum ranking disponível ainda.

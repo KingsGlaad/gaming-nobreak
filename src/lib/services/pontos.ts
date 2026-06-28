@@ -80,6 +80,60 @@ export async function updateYouthAchievements(youthId: string, seasonId: string)
         },
       });
 
+      const ebdCondition = {
+        OR: [
+          { title: { contains: "ebd", mode: "insensitive" as const } },
+          { title: { contains: "escola bíblica", mode: "insensitive" as const } },
+          { title: { contains: "escola biblica", mode: "insensitive" as const } },
+          { title: { contains: "dominical", mode: "insensitive" as const } },
+          { activity_type: { name: { contains: "ebd", mode: "insensitive" as const } } },
+          { activity_type: { name: { contains: "escola bíblica", mode: "insensitive" as const } } },
+          { activity_type: { name: { contains: "escola biblica", mode: "insensitive" as const } } },
+          { activity_type: { name: { contains: "dominical", mode: "insensitive" as const } } },
+        ]
+      };
+
+      const discipuladoCondition = {
+        OR: [
+          { title: { contains: "discipulado", mode: "insensitive" as const } },
+          { activity_type: { name: { contains: "discipulado", mode: "insensitive" as const } } },
+        ]
+      };
+
+      const ebdCount = await prisma.attendance.count({
+        where: {
+          youth_id: youthId,
+          season_id: seasonId,
+          status: "present",
+          activity: ebdCondition,
+        },
+      });
+
+      const discipuladoCount = await prisma.attendance.count({
+        where: {
+          youth_id: youthId,
+          season_id: seasonId,
+          status: "present",
+          activity: discipuladoCondition,
+        },
+      });
+
+      const cultosCount = await prisma.attendance.count({
+        where: {
+          youth_id: youthId,
+          season_id: seasonId,
+          status: "present",
+          NOT: {
+            activity: {
+              OR: [
+                ebdCondition,
+                discipuladoCondition
+              ]
+            }
+          },
+        },
+      });
+
       const achievements = await prisma.achievement.findMany();
 
       const qualifiedAchievements = achievements.filter((ach) => {
@@ -88,6 +142,15 @@ export async function updateYouthAchievements(youthId: string, seasonId: string)
         }
         if (ach.condition_type === "visitors") {
           return visitorsCount >= ach.condition_value;
+        }
+        if (ach.condition_type === "cultos") {
+          return cultosCount >= ach.condition_value;
+        }
+        if (ach.condition_type === "ebd") {
+          return ebdCount >= ach.condition_value;
+        }
+        if (ach.condition_type === "discipulado") {
+          return discipuladoCount >= ach.condition_value;
         }
         return false;
       });

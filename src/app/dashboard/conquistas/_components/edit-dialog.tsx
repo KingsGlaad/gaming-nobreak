@@ -34,13 +34,21 @@ import {
 import { createAchievement, updateAchievement } from "@/lib/services/conquistas";
 
 const formSchema = z.object({
-  name: z.string().min(3, "Nome da conquista é obrigatório"),
+  name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres."),
   description: z.string().optional(),
   icon: z.string().optional(),
-  condition_type: z.enum(["points", "visitors"]),
-  condition_value: z.number().int().min(0, "O valor deve ser 0 ou maior"),
-  points: z.number().int().min(0, "Os pontos devem ser positivos"),
+  condition_type: z.enum(["points", "visitors", "cultos", "ebd", "discipulado"]),
+  condition_value: z.coerce.number().min(1, "O valor deve ser maior que 0"),
+  points: z.coerce.number().min(0, "A pontuação não pode ser negativa"),
 });
+
+const conditionTypes = [
+  { value: "points", label: "Pontos Acumulados" },
+  { value: "visitors", label: "Qtd. de Visitantes" },
+  { value: "cultos", label: "Qtd. de Cultos" },
+  { value: "ebd", label: "Qtd. de EBDs" },
+  { value: "discipulado", label: "Qtd. de Discipulados" },
+];
 
 interface EditConquistaDialogProps {
   isOpen: boolean;
@@ -59,7 +67,7 @@ export function EditConquistaDialog({
   const isEditing = !!data;
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       name: "",
       description: "",
@@ -76,7 +84,7 @@ export function EditConquistaDialog({
         name: data.name || "",
         description: data.description || "",
         icon: data.icon || "",
-        condition_type: data.condition_type as "points" | "visitors",
+        condition_type: data.condition_type as "points" | "visitors" | "cultos" | "ebd" | "discipulado",
         condition_value: data.condition_value || 0,
         points: data.points || 0,
       });
@@ -194,6 +202,9 @@ export function EditConquistaDialog({
                       <SelectContent>
                         <SelectItem value="points">Total de Pontos (XP)</SelectItem>
                         <SelectItem value="visitors">Qtd. de Visitantes</SelectItem>
+                        <SelectItem value="cultos">Qtd. de Cultos</SelectItem>
+                        <SelectItem value="ebd">Qtd. de EBDs</SelectItem>
+                        <SelectItem value="discipulado">Qtd. de Discipulados</SelectItem>
                       </SelectContent>
                     </Select>
                     <FieldError errors={[form.formState.errors.condition_type]} />

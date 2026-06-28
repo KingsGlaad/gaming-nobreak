@@ -67,10 +67,22 @@ export function RankingList({ initialRanking }: RankingListProps) {
 
   // Adicionar o rank original a cada item antes de filtrar
   const rankedItems = useMemo(() => {
-    return initialRanking.map((item, index) => ({
-      ...item,
-      rank: index + 1,
-    }));
+    let currentRank = 0;
+    let previousPoints = -1;
+    const result = [];
+
+    for (const item of initialRanking) {
+      if (item.points !== previousPoints) {
+        currentRank++;
+        previousPoints = item.points;
+      }
+      result.push({
+        ...item,
+        rank: currentRank,
+      });
+    }
+
+    return result;
   }, [initialRanking]);
 
   // Filtrar e limitar os itens com useMemo

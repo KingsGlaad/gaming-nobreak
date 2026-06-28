@@ -223,12 +223,85 @@ export async function getYouthProfile(identifier: string) {
     else if (points >= 1000) level = "Ouro";
     else if (points >= 500) level = "Prata";
 
-    const achievements = youth.youth_achievements.map((ya) => ({
-      id: ya.achievement.id,
-      name: ya.achievement.name,
-      desc: ya.achievement.description || "",
-      icon: ya.achievement.icon || "⭐",
-    }));
+    const ebdCondition = {
+      OR: [
+        { title: { contains: "ebd", mode: "insensitive" as const } },
+        { title: { contains: "escola bíblica", mode: "insensitive" as const } },
+        { title: { contains: "escola biblica", mode: "insensitive" as const } },
+        { title: { contains: "dominical", mode: "insensitive" as const } },
+        { activity_type: { name: { contains: "ebd", mode: "insensitive" as const } } },
+        { activity_type: { name: { contains: "escola bíblica", mode: "insensitive" as const } } },
+        { activity_type: { name: { contains: "escola biblica", mode: "insensitive" as const } } },
+        { activity_type: { name: { contains: "dominical", mode: "insensitive" as const } } },
+      ]
+    };
+
+    const discipuladoCondition = {
+      OR: [
+        { title: { contains: "discipulado", mode: "insensitive" as const } },
+        { activity_type: { name: { contains: "discipulado", mode: "insensitive" as const } } },
+      ]
+    };
+
+    const visitorsCount = await prisma.visitor.count({
+      where: { responsible_youth_id: youth.id }
+    });
+
+    const cultosCount = await prisma.attendance.count({
+      where: {
+        youth_id: youth.id,
+        status: "present",
+        ...(activeSeason && { season_id: activeSeason.id }),
+        NOT: {
+          activity: {
+            OR: [
+              ebdCondition,
+              discipuladoCondition
+            ]
+          }
+        }
+      }
+    });
+
+    const ebdCount = await prisma.attendance.count({
+      where: {
+        youth_id: youth.id,
+        status: "present",
+        ...(activeSeason && { season_id: activeSeason.id }),
+        activity: ebdCondition
+      }
+    });
+
+    const discipuladoCount = await prisma.attendance.count({
+      where: {
+        youth_id: youth.id,
+        status: "present",
+        ...(activeSeason && { season_id: activeSeason.id }),
+        activity: discipuladoCondition
+      }
+    });
+
+    const allAchievements = await prisma.achievement.findMany({ orderBy: { condition_value: "asc" } });
+    const unlockedIds = new Set(youth.youth_achievements.map((ya) => ya.achievement_id));
+
+    const achievements = allAchievements.map((ach) => {
+      let currentProgress = 0;
+      if (ach.condition_type === "points") currentProgress = points;
+      else if (ach.condition_type === "visitors") currentProgress = visitorsCount;
+      else if (ach.condition_type === "cultos") currentProgress = cultosCount;
+      else if (ach.condition_type === "ebd") currentProgress = ebdCount;
+      else if (ach.condition_type === "discipulado") currentProgress = discipuladoCount;
+
+      return {
+        id: ach.id,
+        name: ach.name,
+        desc: ach.description || "",
+        icon: ach.icon || "⭐",
+        unlocked: unlockedIds.has(ach.id),
+        progress: currentProgress,
+        target: ach.condition_value
+      };
+    });
 
     const history = youth.score_transactions.map((t) => ({
       id: t.id,

@@ -12,6 +12,8 @@ interface Params {
   id: string;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
 }: {
@@ -90,7 +92,8 @@ export default async function YouthProfilePage({
       border: "border-yellow-500/30",
       text: "text-yellow-500",
       bg: "bg-yellow-500/10",
-      gradient: "bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-700",
+      gradient:
+        "bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-700",
     },
     Diamante: {
       border: "border-cyan-400/30",
@@ -199,38 +202,57 @@ export default async function YouthProfilePage({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="flex flex-col gap-8 max-w-3xl mx-auto">
         {/* Conquistas */}
         <Card className="border-border/50 bg-card/40 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Medal className="h-5 w-5 text-yellow-500" />
-              Conquistas Desbloqueadas
+              Conquistas e Progresso
             </CardTitle>
           </CardHeader>
           <CardContent>
             {youth.achievements.length === 0 ? (
               <p className="text-center py-6 text-sm text-muted-foreground">
-                Nenhuma conquista desbloqueada nesta temporada.
+                Nenhuma conquista cadastrada.
               </p>
             ) : (
-              <div className="space-y-4">
-                {youth.achievements.map((ach) => (
-                  <div
-                    key={ach.id}
-                    className="flex items-start gap-4 p-3 rounded-xl bg-background/50 border border-border/50"
-                  >
-                    <div className="h-10 w-10 shrink-0 flex items-center justify-center text-2xl bg-muted rounded-lg">
-                      {ach.icon}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 max-h-[450px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent pt-2 pb-4">
+                {youth.achievements.map((ach) => {
+                  return (
+                    <div
+                      key={ach.id}
+                      className={`flex flex-col items-center gap-2 group transition-all ${
+                        !ach.unlocked
+                          ? "opacity-50 grayscale-50"
+                          : "scale-105 drop-shadow-sm"
+                      }`}
+                    >
+                      <div
+                        className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center transition-all duration-300 border-2 text-3xl
+                          ${ach.unlocked ? "bg-primary/20 border-primary/50 shadow-[0_0_15px_rgba(var(--primary),0.3)]" : "bg-muted border-border"}
+                        `}
+                      >
+                        {ach.icon}
+                      </div>
+                      <div className="text-center w-full">
+                        <div
+                          className={`font-bold text-sm leading-tight ${ach.unlocked ? "text-foreground" : "text-muted-foreground"}`}
+                        >
+                          {ach.name}
+                        </div>
+                        <div className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2 px-1">
+                          {ach.desc}
+                        </div>
+                        <div
+                          className={`text-xs font-semibold mt-1.5 ${ach.unlocked ? "text-primary" : "text-muted-foreground"}`}
+                        >
+                          {ach.progress} / {ach.target}
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-semibold text-sm">{ach.name}</h4>
-                      <p className="text-xs text-muted-foreground">
-                        {ach.desc}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </CardContent>
@@ -250,7 +272,7 @@ export default async function YouthProfilePage({
                 Nenhum ponto registrado nesta temporada.
               </p>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-4 max-h-[350px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
                 {youth.history.map((item) => (
                   <div
                     key={item.id}

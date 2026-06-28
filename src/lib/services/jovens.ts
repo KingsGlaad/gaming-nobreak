@@ -12,6 +12,13 @@ export async function getJovens() {
 
     const jovens = await prisma.youth.findMany({
       orderBy: { name: "asc" },
+      include: {
+        score_transactions: activeSeason ? {
+          where: { season_id: activeSeason.id },
+          orderBy: { created_at: "desc" },
+          include: { point_rule: true, activity: true }
+        } : false
+      }
     });
 
     const pointsSum = await prisma.scoreTransaction.groupBy({
