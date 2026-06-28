@@ -60,7 +60,7 @@ model User {
 model Youth {
   id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name         String    @db.VarChar(255)
-  nickname     String?   @db.VarChar(100)
+  nickname     String?   @unique @db.VarChar(100)
   birth_date   DateTime? @db.Date
   phone        String?   @db.VarChar(30)
   instagram    String?   @db.VarChar(100)
