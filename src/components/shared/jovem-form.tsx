@@ -36,7 +36,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { ImageCropper } from "@/components/shared/image-cropper";
-import { ReadyPlayerMeCreator } from "@/components/shared/ready-player-me";
+import Image from "next/image";
 
 function DatePickerInput({
   value,
@@ -181,8 +181,10 @@ export function JovemForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | Blob | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [uncroppedImageSrc, setUncroppedImageSrc] = useState<string | null>(null);
-  const [isAvatarCreatorOpen, setIsAvatarCreatorOpen] = useState(false);
+  const [uncroppedImageSrc, setUncroppedImageSrc] = useState<string | null>(
+    null,
+  );
+  const [isGenerating3D, setIsGenerating3D] = useState(false);
   const isEditing = !!data;
   const router = useRouter();
 
@@ -248,13 +250,54 @@ export function JovemForm({
     setUncroppedImageSrc(null);
   };
 
-  const handleAvatarExported = (avatarUrl: string) => {
-    // Definimos a URL do preview como a imagem gerada pelo Ready Player Me
-    // E resetamos o imageFile porque não faremos o upload manual no backend (a imagem já está num servidor).
-    // O formulário vai entender que a photo_url mudou ao enviarmos o submit.
-    setPreviewUrl(avatarUrl);
-    setImageFile(null);
-    form.setValue("photo_url", avatarUrl);
+  const generate3DAvatar = async () => {
+    // Pegar a imagem que já está em uncroppedImageSrc (se acabou de fazer upload)
+    // Ou a dataUrl convertida do previewUrl
+    // Ou a URL pública que já está salva no banco (data?.photo_url)
+    let imageToProcess = previewUrl || form.getValues("photo_url") || data?.photo_url;
+    
+    // Se o usuário selecionou uma nova foto local (File/Blob), vamos lê-la
+    if (imageFile) {
+      const reader = new FileReader();
+      reader.readAsDataURL(imageFile);
+      await new Promise<void>((resolve) => {
+        reader.onloadend = () => {
+          imageToProcess = reader.result as string;
+          resolve();
+        };
+      });
+    }
+
+    if (!imageToProcess) {
+      toast.error("Por favor, selecione ou recorte uma foto primeiro.");
+      return;
+    }
+
+    setIsGenerating3D(true);
+    toast.info("A IA está trabalhando no seu avatar 3D. Isso pode levar alguns segundos...");
+
+    try {
+      const res = await fetch("/api/jovens/generate-avatar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: imageToProcess }),
+      });
+
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.error || "Erro ao gerar avatar.");
+      }
+
+      setPreviewUrl(json.url);
+      setImageFile(null);
+      form.setValue("photo_url", json.url);
+      toast.success("Avatar 3D gerado com sucesso! ✨");
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Ocorreu um erro ao gerar o avatar 3D.");
+    } finally {
+      setIsGenerating3D(false);
+    }
   };
 
   const nicknameValue = form.watch("nickname");
@@ -269,7 +312,10 @@ export function JovemForm({
 
     const delayDebounceFn = setTimeout(async () => {
       try {
-        const url = new URL("/api/jovens/check-nickname", window.location.origin);
+        const url = new URL(
+          "/api/jovens/check-nickname",
+          window.location.origin,
+        );
         url.searchParams.set("nickname", nicknameValue);
         if (isEditing && data?.id) {
           url.searchParams.set("ignoreId", data.id);
@@ -403,38 +449,45 @@ export function JovemForm({
       <Field>
         <FieldLabel>Avatar / Foto do Jovem</FieldLabel>
         <FieldContent>
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <div className="flex-1 w-full">
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-              />
-              <p className="text-xs text-muted-foreground mt-1">Faça upload de uma foto do seu dispositivo.</p>
-            </div>
-            <div className="text-sm font-medium text-muted-foreground">OU</div>
-            <Button 
-              type="button" 
-              variant="secondary" 
-              className="w-full sm:w-auto shrink-0 font-bold bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 border-0"
-              onClick={() => setIsAvatarCreatorOpen(true)}
-            >
-              Criar Avatar 3D ✨
-            </Button>
+          <div className="flex flex-col gap-2 w-full">
+            <Input type="file" accept="image/*" onChange={handleFileChange} />
+            <p className="text-xs text-muted-foreground mt-1">
+              Faça upload de uma foto do rosto bem iluminada.
+            </p>
           </div>
 
-          {(data?.photo_url || previewUrl || form.getValues("photo_url")) && (
-            <div className="mt-4">
-              <img
-                src={previewUrl || form.getValues("photo_url") || data?.photo_url}
+          {(data?.photo_url || previewUrl || form.getValues("photo_url") || imageFile) && (
+            <div className="mt-4 flex flex-col sm:flex-row gap-4 items-center p-4 bg-muted/30 rounded-xl border border-border">
+              <Image
+                src={
+                  previewUrl || form.getValues("photo_url") || data?.photo_url || ""
+                }
                 alt="Preview da foto do jovem"
-                className="w-32 h-32 object-cover rounded-xl border-2 border-border"
+                className="w-32 h-32 object-cover rounded-xl border-2 border-primary shadow-sm"
+                width={128}
+                height={128}
               />
-              {!previewUrl && !form.getValues("photo_url") && (
-                <div className="mt-2 text-xs text-muted-foreground">
-                  Avatar atual
-                </div>
-              )}
+              
+              <div className="flex flex-col gap-2">
+                {!previewUrl && !form.getValues("photo_url") && (
+                  <div className="text-sm text-muted-foreground font-medium">
+                    Foto atual
+                  </div>
+                )}
+                
+                <Button
+                  type="button"
+                  variant="default"
+                  disabled={isGenerating3D || (!imageFile && !previewUrl && !data?.photo_url)}
+                  onClick={generate3DAvatar}
+                  className="bg-gradient-to-r from-primary to-secondary text-white font-bold w-full sm:w-auto shadow-md hover:shadow-lg transition-all"
+                >
+                  {isGenerating3D ? "Transformando na IA... ⏳" : "Transformar em 3D com IA ✨"}
+                </Button>
+                <p className="text-xs text-muted-foreground max-w-[200px] text-center sm:text-left">
+                  A Inteligência Artificial vai transformar a foto acima em um personagem de game no estilo 3D.
+                </p>
+              </div>
             </div>
           )}
         </FieldContent>
@@ -447,12 +500,6 @@ export function JovemForm({
           onCancel={() => setUncroppedImageSrc(null)}
         />
       )}
-
-      <ReadyPlayerMeCreator 
-        isOpen={isAvatarCreatorOpen}
-        onClose={() => setIsAvatarCreatorOpen(false)}
-        onAvatarExported={handleAvatarExported}
-      />
 
       <Field>
         <FieldLabel htmlFor="name">Nome Completo</FieldLabel>
