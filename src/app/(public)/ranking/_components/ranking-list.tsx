@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import Image from "next/image";
+import { UserAvatar } from "@/components/shared/user-avatar";
 
 interface RankingItem {
   id: string;
@@ -197,14 +197,21 @@ export function RankingList({ initialRanking }: RankingListProps) {
                     <TableCell>
                       <Link
                         href={`/jovem/${youth.nickname || youth.id}`}
-                        className="flex flex-col group-hover:text-primary transition-colors"
+                        className="flex items-center gap-3 group-hover:text-primary transition-colors"
                       >
-                        <span className="font-semibold">{youth.name}</span>
-                        {youth.nickname && (
-                          <span className="text-xs text-muted-foreground">
-                            {youth.nickname}
-                          </span>
-                        )}
+                        <UserAvatar 
+                          name={youth.name} 
+                          photo_url={youth.photo_url} 
+                          className="h-10 w-10 border border-primary/20"
+                        />
+                        <div className="flex flex-col">
+                          <span className="font-semibold">{youth.name}</span>
+                          {youth.nickname && (
+                            <span className="text-xs text-muted-foreground">
+                              {youth.nickname}
+                            </span>
+                          )}
+                        </div>
                       </Link>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
@@ -270,20 +277,13 @@ export function RankingList({ initialRanking }: RankingListProps) {
 
                       {/* Avatar */}
                       <div
-                        className={`h-16 w-16 rounded-full overflow-hidden border-2 mb-2 bg-muted flex items-center justify-center ${borderClass}`}
+                        className={`mb-2 flex items-center justify-center rounded-full p-0.5 ${borderClass}`}
                       >
-                        {youth.photo_url ? (
-                          <Image
-                            src={youth.photo_url}
-                            alt={youth.name}
-                            className="h-full w-full object-cover"
-                            width={100}
-                            height={100}
-                            unoptimized
-                          />
-                        ) : (
-                          <Trophy className={`h-10 w-10 ${textClass}`} />
-                        )}
+                        <UserAvatar 
+                          name={youth.name} 
+                          photo_url={youth.photo_url} 
+                          className="h-16 w-16"
+                        />
                       </div>
 
                       {/* Info */}

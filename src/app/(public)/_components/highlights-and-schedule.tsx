@@ -6,6 +6,7 @@ import { ArrowRight, CalendarDays, Trophy } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Ranking } from "@/types/ranking";
 import { Activity } from "@/generated/prisma/client";
+import { UserAvatar } from "@/components/shared/user-avatar";
 
 interface HighlightsAndScheduleProps {
   ranking: Ranking[];
@@ -62,6 +63,13 @@ export function HighlightsAndSchedule({ ranking, events }: HighlightsAndSchedule
                           >
                             {currentRank}
                           </div>
+                          
+                          <UserAvatar 
+                            name={user.name} 
+                            photo_url={user.photo_url} 
+                            className="h-8 w-8"
+                          />
+
                           <div className="flex-1 font-medium">{user.name}</div>
                           <div
                             className={`${

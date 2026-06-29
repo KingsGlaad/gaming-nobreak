@@ -36,6 +36,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { ImageCropper } from "@/components/shared/image-cropper";
+import { ReadyPlayerMeCreator } from "@/components/shared/ready-player-me";
 
 function DatePickerInput({
   value,
@@ -181,6 +182,7 @@ export function JovemForm({
   const [imageFile, setImageFile] = useState<File | Blob | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uncroppedImageSrc, setUncroppedImageSrc] = useState<string | null>(null);
+  const [isAvatarCreatorOpen, setIsAvatarCreatorOpen] = useState(false);
   const isEditing = !!data;
   const router = useRouter();
 
@@ -244,6 +246,15 @@ export function JovemForm({
     setImageFile(croppedBlob);
     setPreviewUrl(URL.createObjectURL(croppedBlob));
     setUncroppedImageSrc(null);
+  };
+
+  const handleAvatarExported = (avatarUrl: string) => {
+    // Definimos a URL do preview como a imagem gerada pelo Ready Player Me
+    // E resetamos o imageFile porque não faremos o upload manual no backend (a imagem já está num servidor).
+    // O formulário vai entender que a photo_url mudou ao enviarmos o submit.
+    setPreviewUrl(avatarUrl);
+    setImageFile(null);
+    form.setValue("photo_url", avatarUrl);
   };
 
   const nicknameValue = form.watch("nickname");
@@ -390,24 +401,38 @@ export function JovemForm({
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       <Field>
-        <FieldLabel>Foto do Jovem</FieldLabel>
+        <FieldLabel>Avatar / Foto do Jovem</FieldLabel>
         <FieldContent>
-          <Input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-          />
-          {(data?.photo_url || previewUrl) && (
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <div className="flex-1 w-full">
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+              <p className="text-xs text-muted-foreground mt-1">Faça upload de uma foto do seu dispositivo.</p>
+            </div>
+            <div className="text-sm font-medium text-muted-foreground">OU</div>
+            <Button 
+              type="button" 
+              variant="secondary" 
+              className="w-full sm:w-auto shrink-0 font-bold bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 border-0"
+              onClick={() => setIsAvatarCreatorOpen(true)}
+            >
+              Criar Avatar 3D ✨
+            </Button>
+          </div>
+
+          {(data?.photo_url || previewUrl || form.getValues("photo_url")) && (
             <div className="mt-4">
-              {/* Usando img normal ou Image do Next.js se soubermos os domínios. */}
               <img
-                src={previewUrl || data?.photo_url}
+                src={previewUrl || form.getValues("photo_url") || data?.photo_url}
                 alt="Preview da foto do jovem"
                 className="w-32 h-32 object-cover rounded-xl border-2 border-border"
               />
-              {!previewUrl && (
+              {!previewUrl && !form.getValues("photo_url") && (
                 <div className="mt-2 text-xs text-muted-foreground">
-                  Foto atual
+                  Avatar atual
                 </div>
               )}
             </div>
@@ -422,6 +447,12 @@ export function JovemForm({
           onCancel={() => setUncroppedImageSrc(null)}
         />
       )}
+
+      <ReadyPlayerMeCreator 
+        isOpen={isAvatarCreatorOpen}
+        onClose={() => setIsAvatarCreatorOpen(false)}
+        onAvatarExported={handleAvatarExported}
+      />
 
       <Field>
         <FieldLabel htmlFor="name">Nome Completo</FieldLabel>
