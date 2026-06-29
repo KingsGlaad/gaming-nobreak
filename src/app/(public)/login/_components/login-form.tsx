@@ -34,7 +34,7 @@ export function LoginForm() {
   const { data: session } = useSession();
 
   if (session) {
-    router.push("/dashboard");
+    router.replace("/dashboard");
   }
 
   const {
