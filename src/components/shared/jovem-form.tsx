@@ -35,7 +35,7 @@ import { Calendar } from "@/components/ui/calendar";
 
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
-import Image from "next/image";
+import { ImageCropper } from "@/components/shared/image-cropper";
 
 function DatePickerInput({
   value,
@@ -178,7 +178,9 @@ export function JovemForm({
   isPublic = false,
 }: JovemFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | Blob | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [uncroppedImageSrc, setUncroppedImageSrc] = useState<string | null>(null);
   const isEditing = !!data;
   const router = useRouter();
 
@@ -224,7 +226,25 @@ export function JovemForm({
       });
     }
     setImageFile(null);
+    setPreviewUrl(null);
   }, [data, form]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setUncroppedImageSrc(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCropComplete = (croppedBlob: Blob) => {
+    setImageFile(croppedBlob);
+    setPreviewUrl(URL.createObjectURL(croppedBlob));
+    setUncroppedImageSrc(null);
+  };
 
   const nicknameValue = form.watch("nickname");
 
@@ -272,10 +292,12 @@ export function JovemForm({
 
       if (imageFile) {
         let fileToUpload: Blob | File = imageFile;
-        try {
-          fileToUpload = await convertToWebp(imageFile);
-        } catch (webpError) {
-          console.error("Erro na conversão para webp:", webpError);
+        if (imageFile instanceof File) {
+          try {
+            fileToUpload = await convertToWebp(imageFile);
+          } catch (webpError) {
+            console.error("Erro na conversão para webp:", webpError);
+          }
         }
 
         const nicknameClean = (
@@ -373,20 +395,17 @@ export function JovemForm({
           <Input
             type="file"
             accept="image/*"
-            onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+            onChange={handleFileChange}
           />
-          {(data?.photo_url || imageFile) && (
+          {(data?.photo_url || previewUrl) && (
             <div className="mt-4">
-              <Image
-                src={
-                  imageFile ? URL.createObjectURL(imageFile) : data?.photo_url
-                }
+              {/* Usando img normal ou Image do Next.js se soubermos os domínios. */}
+              <img
+                src={previewUrl || data?.photo_url}
                 alt="Preview da foto do jovem"
                 className="w-32 h-32 object-cover rounded-xl border-2 border-border"
-                width={128}
-                height={128}
               />
-              {!imageFile && (
+              {!previewUrl && (
                 <div className="mt-2 text-xs text-muted-foreground">
                   Foto atual
                 </div>
@@ -395,6 +414,14 @@ export function JovemForm({
           )}
         </FieldContent>
       </Field>
+
+      {uncroppedImageSrc && (
+        <ImageCropper
+          imageSrc={uncroppedImageSrc}
+          onCropComplete={handleCropComplete}
+          onCancel={() => setUncroppedImageSrc(null)}
+        />
+      )}
 
       <Field>
         <FieldLabel htmlFor="name">Nome Completo</FieldLabel>

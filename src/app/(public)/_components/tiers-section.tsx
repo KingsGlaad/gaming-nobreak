@@ -35,7 +35,7 @@ export function TiersSection() {
               <div className="relative w-32 h-32 md:w-40 md:h-40">
                 <Image
                   src="/tier-bronze.png"
-                  alt="Bronze Tier"
+                  alt="Nível Bronze"
                   fill
                   className="object-contain drop-shadow-xl group-hover/tier:drop-shadow-[0_0_25px_rgba(184,115,51,0.6)] transition-all duration-300"
                 />
@@ -53,7 +53,7 @@ export function TiersSection() {
               <div className="relative w-32 h-32 md:w-40 md:h-40">
                 <Image
                   src="/tier-silver.png"
-                  alt="Silver Tier"
+                  alt="Nível Prata"
                   fill
                   className="object-contain drop-shadow-xl group-hover/tier:drop-shadow-[0_0_25px_rgba(192,192,192,0.6)] transition-all duration-300"
                 />
@@ -71,7 +71,7 @@ export function TiersSection() {
               <div className="relative w-32 h-32 md:w-40 md:h-40">
                 <Image
                   src="/tier-gold.png"
-                  alt="Gold Tier"
+                  alt="Nível Ouro"
                   fill
                   className="object-contain drop-shadow-xl group-hover/tier:drop-shadow-[0_0_25px_var(--color-gradient-yellow)] transition-all duration-300"
                 />
@@ -91,7 +91,7 @@ export function TiersSection() {
               <div className="relative w-36 h-36 md:w-48 md:h-48 -mt-2">
                 <Image
                   src="/tier-diamond.png"
-                  alt="Diamond Tier"
+                  alt="Nível Diamante"
                   fill
                   className="object-contain drop-shadow-[0_0_30px_rgba(var(--primary),0.8)] group-hover/tier:drop-shadow-[0_0_50px_rgba(var(--primary),1)] transition-all duration-300 animate-[pulse_4s_infinite]"
                 />

@@ -18,7 +18,8 @@ export function HeroSection({ season }: HeroSectionProps) {
       <div className="absolute inset-0 w-full h-full -z-10 overflow-hidden">
         <Image
           src="/hero-bg.png"
-          alt="Gaming Hero Background"
+          alt=""
+          aria-hidden="true"
           fill
           className="object-cover opacity-30 md:opacity-50 mix-blend-screen"
           priority
@@ -34,7 +35,7 @@ export function HeroSection({ season }: HeroSectionProps) {
           transition={{ duration: 0.8 }}
           className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 border border-primary/40 text-primary text-lg font-bold mb-6 backdrop-blur-md"
         >
-          <Award className="w-4 h-4 animate-pulse" />
+          <Award className="w-4 h-4 animate-pulse" aria-hidden="true" />
           {season.name}
         </motion.div>
       )}
@@ -73,7 +74,7 @@ export function HeroSection({ season }: HeroSectionProps) {
             variant="outline"
             className="w-full sm:w-auto border-secondary/50 hover:bg-secondary/10 text-foreground backdrop-blur-sm transition-all h-14 px-8 text-lg rounded-full hover:scale-105 group"
           >
-            <Trophy className="mr-2 h-5 w-5 group-hover:text-gradient-yellow transition-colors" />
+            <Trophy className="mr-2 h-5 w-5 group-hover:text-gradient-yellow transition-colors" aria-hidden="true" />
             Ver Ranking
           </Button>
         </Link>

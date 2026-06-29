@@ -24,7 +24,7 @@ export function HighlightsAndSchedule({ ranking, events }: HighlightsAndSchedule
           <Card className="h-full border-primary/20 bg-card/40 backdrop-blur-sm hover:border-primary/50 transition-colors group">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-primary group-hover:animate-[wiggle_1s_ease-in-out_infinite]" />
+                <Trophy className="h-5 w-5 text-primary group-hover:animate-[wiggle_1s_ease-in-out_infinite]" aria-hidden="true" />
                 Destaques da Temporada
               </CardTitle>
               <CardDescription>
@@ -32,7 +32,7 @@ export function HighlightsAndSchedule({ ranking, events }: HighlightsAndSchedule
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-4" role="list">
                 {ranking.length > 0 ? (
                   (() => {
                     let currentRank = 0;
@@ -45,6 +45,7 @@ export function HighlightsAndSchedule({ ranking, events }: HighlightsAndSchedule
                       
                       return (
                         <div
+                          role="listitem"
                           key={user.id}
                           className={`flex items-center gap-4 p-3 rounded-lg ${
                             currentRank === 1
@@ -83,9 +84,10 @@ export function HighlightsAndSchedule({ ranking, events }: HighlightsAndSchedule
                 <Link
                   href="/ranking"
                   className="text-sm text-primary hover:underline flex items-center gap-1 font-medium group/link"
+                  aria-label="Acessar página com o ranking completo"
                 >
                   Ver ranking completo{" "}
-                  <ArrowRight className="h-4 w-4 group-hover/link:translate-x-1 transition-transform" />
+                  <ArrowRight className="h-4 w-4 group-hover/link:translate-x-1 transition-transform" aria-hidden="true" />
                 </Link>
               </div>
             </CardContent>
@@ -100,7 +102,7 @@ export function HighlightsAndSchedule({ ranking, events }: HighlightsAndSchedule
           <Card className="h-full border-border/50 bg-card/40 backdrop-blur-sm hover:border-secondary/50 transition-colors group">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <CalendarDays className="h-5 w-5 text-secondary group-hover:scale-110 transition-transform" />
+                <CalendarDays className="h-5 w-5 text-secondary group-hover:scale-110 transition-transform" aria-hidden="true" />
                 Próximos Eventos
               </CardTitle>
               <CardDescription>
@@ -108,7 +110,7 @@ export function HighlightsAndSchedule({ ranking, events }: HighlightsAndSchedule
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-4" role="list">
                 {events.length > 0 ? (
                   events.map((event) => {
                     const dateObj = new Date(event.activity_date);
@@ -126,13 +128,14 @@ export function HighlightsAndSchedule({ ranking, events }: HighlightsAndSchedule
                     return (
                       <div
                         key={event.id}
+                        role="listitem"
                         className="flex flex-col gap-1 p-3 rounded-lg border border-border/50 bg-background/50 hover:bg-muted/50 hover:border-secondary/30 transition-all"
                       >
                         <div className="font-medium">{event.title}</div>
-                        <div className="text-xs text-muted-foreground capitalize">
+                        <time dateTime={dateObj.toISOString()} className="text-xs text-muted-foreground capitalize">
                           {formattedDate}, {formattedTime} -{" "}
                           {event.description || "Evento"}
-                        </div>
+                        </time>
                       </div>
                     );
                   })
@@ -146,9 +149,10 @@ export function HighlightsAndSchedule({ ranking, events }: HighlightsAndSchedule
                 <Link
                   href="/calendario"
                   className="text-sm text-secondary hover:underline flex items-center gap-1 font-medium group/link"
+                  aria-label="Acessar o calendário completo de eventos"
                 >
                   Ver calendário completo{" "}
-                  <ArrowRight className="h-4 w-4 group-hover/link:translate-x-1 transition-transform" />
+                  <ArrowRight className="h-4 w-4 group-hover/link:translate-x-1 transition-transform" aria-hidden="true" />
                 </Link>
               </div>
             </CardContent>

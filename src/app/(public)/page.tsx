@@ -5,12 +5,13 @@ import {
   getAchivements,
 } from "@/lib/services/public";
 
-// Importações dos novos componentes separados
+import dynamic from "next/dynamic";
 import { HeroSection } from "./_components/hero-section";
-import { HowItWorks } from "./_components/how-it-works";
-import { TiersSection } from "./_components/tiers-section";
-import { AchievementsSection } from "./_components/achievements-section";
-import { HighlightsAndSchedule } from "./_components/highlights-and-schedule";
+
+const HowItWorks = dynamic(() => import("./_components/how-it-works").then(mod => mod.HowItWorks));
+const TiersSection = dynamic(() => import("./_components/tiers-section").then(mod => mod.TiersSection));
+const AchievementsSection = dynamic(() => import("./_components/achievements-section").then(mod => mod.AchievementsSection));
+const HighlightsAndSchedule = dynamic(() => import("./_components/highlights-and-schedule").then(mod => mod.HighlightsAndSchedule));
 
 export default async function Home() {
   const ranking = await getTopRanking(2);

@@ -54,7 +54,7 @@ export function AchievementsSection({
         className="space-y-4"
       >
         <h2 className="text-3xl md:text-4xl font-bold flex items-center justify-center gap-3">
-          <Award className="text-primary h-8 w-8 drop-shadow-[0_0_10px_rgba(var(--primary),0.6)] animate-pulse" />{" "}
+          <Award className="text-primary h-8 w-8 drop-shadow-[0_0_10px_rgba(var(--primary),0.6)] animate-pulse" aria-hidden="true" />{" "}
           Conquistas Exclusivas
         </h2>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">

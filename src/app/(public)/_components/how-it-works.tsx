@@ -15,7 +15,7 @@ export function HowItWorks() {
         className="text-center space-y-4"
       >
         <h2 className="text-3xl md:text-4xl font-bold flex items-center justify-center gap-3">
-          <Target className="text-gradient-yellow h-8 w-8 drop-shadow-[0_0_10px_var(--color-gradient-yellow)]" />{" "}
+          <Target className="text-gradient-yellow h-8 w-8 drop-shadow-[0_0_10px_var(--color-gradient-yellow)]" aria-hidden="true" />{" "}
           Como Funciona?
         </h2>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -34,7 +34,7 @@ export function HowItWorks() {
           <Card className="h-full bg-card/40 backdrop-blur-sm border-primary/20 hover:border-primary/50 transition-all duration-300 hover:-translate-y-3 hover:shadow-[0_15px_40px_-10px_rgba(var(--primary),0.4)] group">
             <CardHeader>
               <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-[0_0_15px_rgba(var(--primary),0.4)] transition-all">
-                <CalendarDays className="h-6 w-6 text-primary" />
+                <CalendarDays className="h-6 w-6 text-primary" aria-hidden="true" />
               </div>
               <CardTitle>1. Participe</CardTitle>
             </CardHeader>
@@ -54,7 +54,7 @@ export function HowItWorks() {
           <Card className="h-full bg-card/40 backdrop-blur-sm border-gradient-yellow/20 hover:border-gradient-yellow/50 transition-all duration-300 hover:-translate-y-3 hover:shadow-[0_15px_40px_-10px_var(--color-gradient-yellow)] group">
             <CardHeader>
               <div className="w-12 h-12 rounded-lg bg-gradient-yellow/20 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:-rotate-6 group-hover:shadow-[0_0_15px_var(--color-gradient-yellow)] transition-all">
-                <Users className="h-6 w-6 text-gradient-yellow" />
+                <Users className="h-6 w-6 text-gradient-yellow" aria-hidden="true" />
               </div>
               <CardTitle>2. Engaje</CardTitle>
             </CardHeader>
@@ -74,7 +74,7 @@ export function HowItWorks() {
           <Card className="h-full bg-card/40 backdrop-blur-sm border-secondary/20 hover:border-secondary/50 transition-all duration-300 hover:-translate-y-3 hover:shadow-[0_15px_40px_-10px_rgba(var(--secondary),0.4)] group">
             <CardHeader>
               <div className="w-12 h-12 rounded-lg bg-secondary/20 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-12 group-hover:shadow-[0_0_15px_rgba(var(--secondary),0.4)] transition-all">
-                <Flame className="h-6 w-6 text-secondary" />
+                <Flame className="h-6 w-6 text-secondary" aria-hidden="true" />
               </div>
               <CardTitle>3. Evolua</CardTitle>
             </CardHeader>
