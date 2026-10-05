@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, ClipboardCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -75,6 +75,15 @@ export const columns: ColumnDef<Activity>[] = [
       return (
         <>
           <div className="flex items-center justify-end gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 border-dashed"
+              onClick={() => router.push(`/dashboard/atividades/${atividade.id}/presenca`)}
+            >
+              <ClipboardCheck className="mr-2 h-4 w-4" />
+              Lista de Presença
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
